@@ -110,6 +110,22 @@
   .pied { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; align-items: center; }
   .agence { font-size: 12.5px; font-weight: 600; background: var(--fond); border: 1px solid var(--trait); border-radius: 8px; padding: 3px 8px; text-decoration: none; color: inherit; }
   .date { margin-left: auto; color: var(--doux); font-size: 12.5px; }
+  .badge.affaire { background: #2f7d4f; color: #fff; }
+  .badge.cher { background: #c8432e; color: #fff; }
+  .badge.unpeu { background: #d99a2b; color: #fff; }
+  .marche { margin-top: 10px; padding: 10px 12px; border-radius: 12px; background: var(--fond); border: 1px solid var(--trait); }
+  .marche .haut-m { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .marche .verdict { font-weight: 700; }
+  .marche.v-bonne-affaire .verdict { color: #2f7d4f; }
+  .marche.v-un-peu-cher .verdict { color: #b07812; }
+  .marche.v-trop-cher .verdict { color: #c8432e; }
+  .marche.v-incertain .verdict { color: var(--doux); }
+  .marche .detail { margin-left: auto; color: var(--accent); font-weight: 600; text-decoration: none; font-size: 13.5px; white-space: nowrap; }
+  .jauge { position: relative; height: 8px; border-radius: 4px; margin: 12px 0 4px;
+           background: linear-gradient(90deg, #2f7d4f 0%, #7fae5e 30%, #e3c25a 55%, #d98a3a 75%, #c8432e 100%); opacity: .9; }
+  .jauge .zone { position: absolute; top: -3px; bottom: -3px; border: 2px solid var(--texte); border-radius: 6px; opacity: .55; }
+  .jauge .curseur { position: absolute; top: -6px; width: 4px; height: 20px; margin-left: -2px; border-radius: 2px; background: var(--texte); box-shadow: 0 0 0 2px var(--carte); }
+  .marche .bas-m { display: flex; justify-content: space-between; color: var(--doux); font-size: 12px; }
   .vide { grid-column: 1 / -1; text-align: center; color: var(--doux); padding: 48px 20px; }
   .vide h2 { font-family: var(--titre); color: var(--texte); font-size: 22px; margin: 12px 0 6px; }
   .vide button { margin-top: 14px; border: 0; background: var(--accent); color: #fff; border-radius: 12px; padding: 10px 16px; font-weight: 600; }
@@ -205,6 +221,7 @@
     <button class="puce" data-rapide="b350">≤ 350 000 €</button>
     <button class="puce" data-rapide="ch3">3 ch. et +</button>
     <button class="puce" data-rapide="jardin">Terrain 500 m² +</button>
+    <button class="puce accent" data-rapide="affaires">Bonnes affaires</button>
   </div>
 </header>
 
@@ -227,6 +244,7 @@
     <option value="surface-desc">Plus grandes</option>
     <option value="terrain-desc">Plus grand terrain</option>
     <option value="distance">Plus proches de Donzère</option>
+    <option value="affaire">Meilleures affaires (vs marché)</option>
   </select>
 </div>
 
@@ -275,6 +293,12 @@
       <div class="grille-puces" id="types"></div>
     </div>
     <div class="bloc">
+      <h3>Prix par rapport au marché <small>estimateur DVF</small></h3>
+      <div class="segments" id="filtreMarche">
+        <button data-v="">Tout</button><button data-v="max">Au marché ou moins</button><button data-v="affaire">Bonnes affaires</button>
+      </div>
+    </div>
+    <div class="bloc">
       <h3>Agences</h3>
       <div class="grille-puces" id="agences"></div>
     </div>
@@ -301,12 +325,13 @@ function lire(cle, defaut) { try { const v = localStorage.getItem(cle); return v
 function ecrire(cle, v) { try { localStorage.setItem(cle, JSON.stringify(v)); } catch {} }
 
 const FILTRES_VIDES = { commune: "", prixMin: "", prixMax: "", rayon: 25, chambres: 0, surfaceMin: "", terrainMin: "",
-                        types: [], agences: [], neufs: false, avecPrix: false, regrouper: true, voirMasquees: false, tri: "recent" };
+                        types: [], agences: [], neufs: false, avecPrix: false, marche: "", regrouper: true, voirMasquees: false, tri: "recent" };
 let f = Object.assign({}, FILTRES_VIDES, lire("filtres-v2", {}));
 let favoris = new Set(lire("favoris", []));
 let masquees = new Set(lire("masquees", []));
 let vue = "toutes";
 let annonces = [];
+let DONNEES = {};
 
 /* ---------- Doublons : même commune, même prix, surface proche ---------- */
 function regrouper(liste) {
@@ -339,6 +364,8 @@ function filtrer(ignorer) {
     (!f.agences.length || f.agences.includes(a.source)) &&
     (!f.neufs || a.nouveau) &&
     (!f.avecPrix || a.prix) &&
+    (!f.marche || (a.marche && (f.marche === "affaire" ? a.marche.verdict === "bonne-affaire"
+                             : f.marche === "max" ? a.marche.ecart <= 0.10 && a.marche.verdict !== "incertain" : true))) &&
     (f.voirMasquees || !masquees.has(a.ref)) &&
     (vue !== "favoris" || favoris.has(a.ref)));
 }
@@ -350,12 +377,13 @@ const TRIS = {
   "surface-desc": (a, b) => (b.surface || 0) - (a.surface || 0),
   "terrain-desc": (a, b) => (b.terrain || 0) - (a.terrain || 0),
   "distance": (a, b) => (a.distance_km ?? 99) - (b.distance_km ?? 99),
+  "affaire": (a, b) => (a.marche ? a.marche.ecart : 9) - (b.marche ? b.marche.ecart : 9),
 };
 
 function nbFiltresActifs() {
   return ["prixMin", "prixMax", "surfaceMin", "terrainMin"].filter(k => f[k]).length
     + (f.rayon < 25) + (f.chambres > 0) + (f.types.length > 0) + (f.agences.length > 0)
-    + f.neufs + f.avecPrix + f.voirMasquees;
+    + f.neufs + f.avecPrix + f.voirMasquees + (f.marche !== "");
 }
 
 /* ---------- Affichage ---------- */
@@ -369,6 +397,32 @@ function dateCourte(iso) {
   return "Depuis le " + d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
+const VERDICTS = {
+  "bonne-affaire": "Bonne affaire",
+  "marche": "Prix du marché",
+  "un-peu-cher": "Un peu cher",
+  "trop-cher": "Trop cher",
+  "incertain": "Estimation peu fiable",
+};
+function blocMarche(a) {
+  const m = a.marche;
+  if (!m) return "";
+  const k = n => Math.round(n / 1000).toLocaleString("fr-FR") + " k€";
+  // jauge de bas×0,8 à haut×1,3 (frais d'agence compris) ; la zone encadrée = fourchette du marché
+  const f = 1 + (DONNEES.marche?.frais_agence ?? 0.05);
+  const lo = m.bas * f * 0.8, hi = m.haut * f * 1.3, pos = v => Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100));
+  const ecart = `${m.ecart > 0 ? "+" : "−"}${Math.abs(Math.round(m.ecart * 100))} %`;
+  return `<div class="marche v-${m.verdict}">
+    <div class="haut-m"><span class="verdict">${VERDICTS[m.verdict]}</span><span style="white-space:nowrap">${m.verdict === "incertain" ? "" : ecart + " vs marché"}</span>
+      <a class="detail" href="${esc(m.lien)}" target="_blank" rel="noopener">Estimation ›</a></div>
+    <div class="jauge" aria-hidden="true">
+      <span class="zone" style="left:${pos(m.bas * f)}%;right:${100 - pos(m.haut * f)}%"></span>
+      <span class="curseur" style="left:${pos(a.prix)}%"></span>
+    </div>
+    <div class="bas-m"><span>Marché ${k(m.bas * f)} – ${k(m.haut * f)}</span><span>${m.ventes} ventes · fiabilité ${m.fiabilite}/100</span></div>
+  </div>`;
+}
+
 function carte(a) {
   const fav = favoris.has(a.ref);
   const specs = [
@@ -377,8 +431,16 @@ function carte(a) {
     a.chambres && `<span>${ico("i-lit")}${a.chambres} ch.</span>`,
     a.terrain && `<span>${ico("i-terrain")}${a.terrain.toLocaleString("fr-FR")} m²</span>`,
   ].filter(Boolean).join("");
+  const m = a.marche;
+  const pct = m ? `${m.ecart > 0 ? "+" : "−"}${Math.abs(Math.round(m.ecart * 100))} %` : "";
+  const badgeMarche = !m ? "" : {
+    "bonne-affaire": `<span class="badge affaire">Bonne affaire ${pct}</span>`,
+    "un-peu-cher": `<span class="badge unpeu">Un peu cher ${pct}</span>`,
+    "trop-cher": `<span class="badge cher">Trop cher ${pct}</span>`,
+  }[m.verdict] || "";
   const badges = [
     a.nouveau && `<span class="badge neuf">Nouveau</span>`,
+    badgeMarche,
     a.type && a.type !== "Maison" && `<span class="badge">${esc(a.type)}</span>`,
   ].filter(Boolean).join("");
   const visuel = a.photo
@@ -398,7 +460,7 @@ function carte(a) {
         <div class="titre">${esc(String(a.titre || "").replace(/\bm 2\b/g, "m²").replace(/^Achat /, ""))}</div>
       </div>
     </a>
-    <div class="corps" style="padding-top:0"><div class="pied">
+    <div class="corps" style="padding-top:0">${blocMarche(a)}<div class="pied">
       <a class="agence" href="${esc(a.lien)}" target="_blank" rel="noopener">${esc(a.source)}</a>${autres}
       <span class="date">${dateCourte(a.vu_le)}</span>
     </div></div>
@@ -446,6 +508,7 @@ const RAPIDES = {
   b350: { actif: () => f.prixMax == 350000, basculer: v => f.prixMax = v ? 350000 : "" },
   ch3: { actif: () => f.chambres === 3, basculer: v => f.chambres = v ? 3 : 0 },
   jardin: { actif: () => f.terrainMin == 500, basculer: v => f.terrainMin = v ? 500 : "" },
+  affaires: { actif: () => f.marche === "affaire", basculer: v => f.marche = v ? "affaire" : "" },
 };
 function majPuces() {
   document.querySelectorAll("[data-rayon]").forEach(p => p.classList.toggle("on", +p.dataset.rayon === f.rayon));
@@ -468,6 +531,7 @@ function syncPanneau() {
   $("rayon").value = f.rayon;
   $("rayonTxt").textContent = f.rayon >= 25 ? "toutes" : `jusqu'à ${f.rayon} km`;
   document.querySelectorAll("#chambres button").forEach(b => b.classList.toggle("on", +b.dataset.v === f.chambres));
+  document.querySelectorAll("#filtreMarche button").forEach(b => b.classList.toggle("on", b.dataset.v === f.marche));
   puces("types", [...new Set(annonces.map(a => a.type))].sort(), "types");
   puces("agences", [...new Set(annonces.map(a => a.source))].sort(), "agences");
 }
@@ -478,6 +542,7 @@ $("reinit").onclick = () => { f = Object.assign({}, FILTRES_VIDES, { commune: f.
 for (const k of ["prixMin", "prixMax", "surfaceMin", "terrainMin"]) $(k).addEventListener("input", e => { f[k] = e.target.value; afficher(); });
 for (const k of ["neufs", "avecPrix", "regrouper", "voirMasquees"]) $(k).addEventListener("change", e => { f[k] = e.target.checked; afficher(); });
 $("rayon").addEventListener("input", e => { f.rayon = +e.target.value; syncPanneau(); afficher(); });
+$("filtreMarche").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; f.marche = b.dataset.v; syncPanneau(); afficher(); });
 $("chambres").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; f.chambres = +b.dataset.v; syncPanneau(); afficher(); });
 for (const [id, cle] of [["types", "types"], ["agences", "agences"]]) {
   $(id).addEventListener("click", e => {
@@ -533,6 +598,12 @@ function quand(d) {
   if (jours === 1) return `hier à ${heure}`;
   return `le ${d.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })} à ${heure}`;
 }
+function ligneMarche(data) {
+  const m = data.marche;
+  if (!m) return `<div class="ag"><span class="nom">Estimateur DVF</span><span class="info">pas encore calculé</span><span class="etat ancien">—</span></div>`;
+  const dv = m.derniere_vente ? ` · ventes jusqu'au ${new Date(m.derniere_vente).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}` : "";
+  return `<div class="ag"><span class="nom">Estimateur DVF</span><span class="info">${m.statut === "ok" ? `${m.estimees} annonces estimées${dv}` : esc(m.message || "")}</span><span class="etat ${m.statut === "ok" ? "ok" : "erreur"}">${m.statut === "ok" ? "OK" : "Erreur"}</span></div>`;
+}
 function bandeau(data) {
   const d = versDate(data.mis_a_jour);
   const sources = data.sources || {};
@@ -557,7 +628,8 @@ function bandeau(data) {
       ? `${nb} annonce${nb > 1 ? "s" : ""}${s.nouvelles ? ` · ${s.nouvelles} nouv.` : ""}${s.statut === "partiel" && s.message ? ` · ${esc(s.message)}` : ""}`
       : esc(s.message || (ok ? `dernière réussite ${quand(ok)}` : "pas encore suivi"));
     return `<div class="ag"><span class="nom">${esc(n)}</span><span class="info">${info}</span><span class="etat ${statut}">${libelles[s.statut] || "?"}</span></div>`;
-  }).join("") + `<div class="note-synchro">Le robot passe chaque matin vers 7 h (8 h en été). Les agences bloquées gardent leurs dernières annonces.</div>`;
+  }).join("") + ligneMarche(data) + `<div class="note-synchro">Le robot passe chaque matin vers 7 h (8 h en été). Les agences bloquées gardent leurs dernières annonces.</div>
+    <div class="note-synchro">Prix du marché : calculé par ton Estimateur DVF à partir des ventes notariées autour du centre de la commune, pour une maison en bon état de même surface, et majoré de ${Math.round((data.marche?.frais_agence ?? 0.05) * 100)} % de frais d'agence pour être comparable au prix affiché.</div>`;
 }
 $("synchroBtn").onclick = () => {
   const o = $("synchro").classList.toggle("ouvert");
@@ -566,6 +638,7 @@ $("synchroBtn").onclick = () => {
 
 /* ---------- Chargement ---------- */
 fetch("data/annonces.json?" + Date.now()).then(r => r.json()).then(data => {
+  DONNEES = data;
   annonces = (data.annonces || []).map(a => Object.assign({ commune: "Secteur non précisé", type: "Maison" }, a));
   if (f.commune && !annonces.some(a => a.commune === f.commune)) f.commune = "";
   syncPanneau(); afficher(); bandeau(data);

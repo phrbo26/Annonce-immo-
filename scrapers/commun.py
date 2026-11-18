@@ -212,6 +212,7 @@ def completer(x):
     if commune:
         nom, cp, lat, lon = commune
         x["commune"], x["cp"], x["distance_km"] = nom, cp, distance_km(lat, lon)
+        x["lat"], x["lon"] = lat, lon
     else:
         x["commune"] = "Secteur non précisé"
         x.setdefault("cp", None)
