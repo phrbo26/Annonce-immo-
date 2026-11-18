@@ -45,6 +45,7 @@ def lire_page(url):
             "chambres": nombre(r"(\d+)\s?ch\b", texte),
             "lieu": None,
             "commune": commune[0] if commune else None,
+            "_texte": texte,
             "photo": f"https://images.proprietes-privees.com/annonce/{ref}/PROPRIETES-PRIVEES-{ref}-1.jpg",
         })
     if not refs:

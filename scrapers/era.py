@@ -42,6 +42,7 @@ def lire(recherche, page):
             "type": {"Maison": "Maison", "Villa": "Villa", "Terrain": "Terrain", "Appartement": "Appartement",
                      "Immeuble": "Immeuble"}.get(type_.group(1) if type_ else "", "Autre"),
             "photo": photo(carte, BASE),
+            "_texte": texte,
         }
     return list(annonces.values())
 

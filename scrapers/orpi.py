@@ -44,6 +44,7 @@ def lire_commune(commune):
             "chambres": None,
             "lieu": None,  # la vraie commune est lue dans le lien
             "photo": photo(carte, BASE),
+            "_texte": texte,
         }
     if not annonces:
         echantillon("orpi-page-vide", r.text)

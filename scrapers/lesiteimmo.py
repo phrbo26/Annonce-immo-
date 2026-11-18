@@ -69,6 +69,7 @@ def lire(page, n):
             "commune": commune[0] if commune else adresse.get("addressLocality"),
             "type": TYPES.get(bien.get("@type"), "Maison"),
             "agence": vendeur.title() if vendeur.islower() else vendeur,
+            "_texte": i.get("description"),
             "photo": images[0] if isinstance(images, list) and images else (images or None),
         })
     return refs, annonces

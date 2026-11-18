@@ -43,6 +43,7 @@ def lire(page):
             "lieu": None,
             "commune": commune[0] if commune else None,
             "photo": photo(carte, BASE),
+            "_texte": texte,
         }
     return list(annonces.values())
 

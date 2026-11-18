@@ -206,6 +206,36 @@ def echantillon(nom, html):
     (dossier / f"{nom}.html.gz").write_bytes(gzip.compress(str(html)[:400000].encode("utf-8")))
 
 
+_NOMBRE = r"(\d{1,3}(?:[ .  ]\d{3})+|\d{2,6})(?:[.,]\d+)?"
+_TERRAIN_FORT = [
+    re.compile(r"(?:surface\s+(?:du\s+)?terrain|terrain\s*(?:total)?\s*:)\s*:?\s*(?:d'environ\s+)?" + _NOMBRE + r"\s*m(?:²|2)", re.I),
+]
+_TERRAIN = [
+    re.compile(r"terrain\s+(?:[a-zéèêàâîïôûç]+\s+){0,3}(?:de|d'environ|d’environ|d'env\.?|d'une\s+surface\s+de)\s+(?:plus\s+de\s+)?" + _NOMBRE + r"\s*m(?:²|2)", re.I),
+    re.compile(_NOMBRE + r"\s*m(?:²|2)\s+de\s+terrain", re.I),
+    re.compile(r"terrain\s+(?:de\s+)?" + _NOMBRE + r"\s*m(?:²|2)", re.I),
+]
+_TERRAIN_HA = re.compile(r"terrain[^.]{0,40}?(\d+(?:[.,]\d+)?)\s*(?:ha|hectares?)\b", re.I)
+
+
+def terrain_texte(*textes):
+    """Surface du terrain écrite dans un texte d'annonce (« terrain clos de 1 200 m² », « sur 3500m² de terrain »)."""
+    texte = " ".join(str(t) for t in textes if t)
+    texte = re.sub(r"[  ]", " ", texte)
+    for motifs in (_TERRAIN_FORT, _TERRAIN):
+        for motif in motifs:
+            for m in motif.finditer(texte):
+                v = int(re.sub(r"\D", "", m.group(1)))
+                if 50 <= v <= 300000:
+                    return v
+    m = _TERRAIN_HA.search(texte)
+    if m:
+        v = round(float(m.group(1).replace(",", ".")) * 10000)
+        if 1000 <= v <= 300000:
+            return v
+    return None
+
+
 def completer(x):
     """Ajoute commune, code postal, distance et type à une annonce, à partir de tout ce qu'on sait d'elle."""
     commune = trouver_commune(x.get("commune"), x.get("lien"), x.get("titre"), x.get("lieu"))
@@ -218,6 +248,9 @@ def completer(x):
         x.setdefault("cp", None)
         x["distance_km"] = None
     x["type"] = x.get("type") or type_bien(x.get("titre"), x.get("lien"))
+    if not x.get("terrain"):
+        x["terrain"] = terrain_texte(x.get("titre"), x.get("_texte")) if x["type"] != "Appartement" else None
+    x.pop("_texte", None)
     if x.get("prix") and x.get("surface"):
         x["prix_m2"] = round(x["prix"] / x["surface"])
     return x

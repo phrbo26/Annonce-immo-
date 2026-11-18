@@ -343,6 +343,8 @@ function regrouper(liste) {
       const g = groupes.get(cle);
       if (g.source !== a.source && !g.autres.some(o => o.source === a.source)) g.autres.push({ source: a.source, lien: a.lien });
       if (!g.photo && a.photo) g.photo = a.photo;
+      if (!g.terrain && a.terrain) g.terrain = a.terrain;
+      if (!g.marche && a.marche) g.marche = a.marche;
       if (a.vu_le < g.vu_le) g.vu_le = a.vu_le;
       g.nouveau = g.nouveau && a.nouveau;
     }

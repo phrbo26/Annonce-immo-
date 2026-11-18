@@ -40,6 +40,7 @@ def lire_commune(commune):
             "lieu": None,
             "commune": commune[0] if commune else None,
             "photo": photo(carte, BASE),
+            "_texte": texte,
         }
     if not annonces:
         echantillon("century21-page-vide", r.text)

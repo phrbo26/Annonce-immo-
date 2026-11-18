@@ -40,6 +40,7 @@ def main():
             "chambres": int(chambres) if chambres else None,
             "lieu": f"{cp} {ville.replace('-', ' ').title()}",
             "photo": photo(a, BASE),
+            "_texte": texte,
         }
     enregistrer("Swixim", list(annonces.values()))
 

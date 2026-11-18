@@ -44,6 +44,7 @@ def lire_page(url):
             "chambres": nombre(r"(\d+)\s?chambre", texte),
             "lieu": lieu.group(1) if lieu else None,
             "photo": photo(carte, BASE),
+            "_texte": texte,
         }
     if not annonces:
         echantillon("nestenn-page-vide", r.text)
