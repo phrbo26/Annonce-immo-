@@ -31,6 +31,7 @@ jobs:
       - run: python scrapers/iad.py 2>&1 | tee -a data/journal.txt || true
       - run: python scrapers/capifrance.py 2>&1 | tee -a data/journal.txt || true
       - run: python scrapers/proprietes_privees.py 2>&1 | tee -a data/journal.txt || true
+      - run: python scrapers/sonde.py 2>&1 | tee -a data/journal.txt || true
       - name: Enregistrer les annonces
         run: |
           git config user.name "bot-annonces"
