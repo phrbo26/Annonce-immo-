@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 
 from commun import erreur, HEADERS, echantillon, enregistrer, lien_absolu, nombre, photo, prix_isole, remonter_carte, trouver_commune
 
-COMMUNES = ["donzere", "pierrelatte", "montelimar", "saint-paul-trois-chateaux", "viviers", "malataverne"]
+COMMUNES = ["donzere", "pierrelatte", "montelimar", "malataverne"]  # saint-paul et viviers : pages supprimées (410)
 BASE = "https://www.century21.fr"
 
 
