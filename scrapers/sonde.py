@@ -1,5 +1,6 @@
 """Sonde : télécharge les pages de recherche de nouvelles agences pour voir comment elles sont construites.
 Résultat dans data/debug/sondes/ (une page par agence + un résumé). À supprimer une fois les scripts écrits."""
+import gzip
 import pathlib
 import re
 
@@ -31,7 +32,7 @@ for nom, url in SONDES.items():
                                        "Accept-Language": "fr-FR,fr;q=0.9"}, timeout=30)
         euros = len(re.findall(r"\d[\d\s  .]{2,}\s?€", r.text))
         ligne = f"{nom}: {r.status_code} {len(r.text)} octets, {euros} prix, finale={r.url}"
-        (dossier / f"{nom}.html").write_text(r.text[:600000], encoding="utf-8")
+        (dossier / f"{nom}.html.gz").write_bytes(gzip.compress(r.text[:600000].encode("utf-8")))
     except Exception as e:
         ligne = f"{nom}: ERREUR {e}"
     print(ligne)

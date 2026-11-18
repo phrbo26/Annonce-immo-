@@ -191,7 +191,8 @@ def echantillon(nom, html):
     _DEJA.add(nom)
     dossier = SORTIE.parent / "debug"
     dossier.mkdir(parents=True, exist_ok=True)
-    (dossier / f"{nom}.html").write_text(str(html)[:400000], encoding="utf-8")
+    import gzip
+    (dossier / f"{nom}.html.gz").write_bytes(gzip.compress(str(html)[:400000].encode("utf-8")))
 
 
 def completer(x):
