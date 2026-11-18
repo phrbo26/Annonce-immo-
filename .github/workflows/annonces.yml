@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "0 6 * * *"   # 7 h à Paris en hiver, 8 h en été
   workflow_dispatch:
+  push:                   # se lance aussi quand un script ou ce fichier change
+    branches: [main]
+    paths:
+      - "scrapers/**"
+      - ".github/workflows/**"
+      - "requirements.txt"
 
 permissions:
   contents: write
