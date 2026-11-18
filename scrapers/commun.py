@@ -134,18 +134,46 @@ def remonter_carte(lien, marqueur="€", niveaux=8):
     return carte
 
 
+_PAS_UNE_PHOTO = re.compile(
+    r"logo|icon|picto|sprite|placeholder|\.svg|profile|avatar|agent|negociateur|conseiller|mandataire|user|portrait|badge|label",
+    re.I)
+_URL_IMAGE = re.compile(r"""(https?:)?//[^\s"'()<>]+?\.(?:jpe?g|webp|png|avif)(?:\?[^\s"'()<>]*)?|/[^\s"'()<>]+?\.(?:jpe?g|webp|png|avif)(?:\?[^\s"'()<>]*)?""", re.I)
+
+
 def photo(carte, base):
-    """Première vraie image de la carte (ignore logos, icônes et images vides)."""
-    for img in carte.find_all("img"):
-        for attr in ("data-src", "data-lazy-src", "data-original", "src", "srcset", "data-srcset"):
-            v = img.get(attr)
-            if not v:
+    """Première photo du bien dans la carte : ignore logos, icônes et photos des conseillers.
+    Cherche dans tous les attributs des balises img/source (src, data-src, srcset…) et dans les background-image."""
+    candidats = []
+    for el in carte.find_all(["img", "source"]):
+        for attr, v in el.attrs.items():
+            if isinstance(v, list):
+                v = " ".join(v)
+            if attr in ("alt", "class", "title") or not isinstance(v, str):
                 continue
-            v = v.split(",")[0].split()[0]
-            if v.startswith("data:") or re.search(r"logo|icon|picto|sprite|placeholder|\.svg", v, re.I):
-                continue
+            candidats += [m.group(0) for m in _URL_IMAGE.finditer(v)]
+    for el in carte.find_all(style=True):
+        candidats += [m.group(0) for m in _URL_IMAGE.finditer(el["style"])]
+    for el in carte.find_all(True):
+        for attr in ("data-bg", "data-background", "data-image", "data-img"):
+            if el.get(attr):
+                candidats += [m.group(0) for m in _URL_IMAGE.finditer(el[attr])]
+    for v in candidats:
+        if not _PAS_UNE_PHOTO.search(v):
             return lien_absolu(base, v)
     return None
+
+
+_DEJA = set()
+
+
+def echantillon(nom, html):
+    """Garde un extrait de page dans data/debug/ pour comprendre un site sans pouvoir l'ouvrir."""
+    if nom in _DEJA:
+        return
+    _DEJA.add(nom)
+    dossier = SORTIE.parent / "debug"
+    dossier.mkdir(parents=True, exist_ok=True)
+    (dossier / f"{nom}.html").write_text(str(html)[:40000], encoding="utf-8")
 
 
 def completer(x):

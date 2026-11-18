@@ -5,7 +5,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from commun import CODES_POSTAUX, HEADERS, enregistrer, photo
+from commun import CODES_POSTAUX, HEADERS, echantillon, enregistrer, photo
 
 URL = "https://www.swixim.com/en/agencies/details/20/swixim-portes-de-provence/"
 BASE = "https://www.swixim.com"

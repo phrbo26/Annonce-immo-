@@ -5,7 +5,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import HEADERS, enregistrer, lien_absolu, nombre, photo, remonter_carte
+from commun import HEADERS, enregistrer, lien_absolu, nombre, echantillon, photo, remonter_carte
 
 COMMUNES = [
     "donzere-26290", "les-granges-gontardes-26290", "pierrelatte-26700",
@@ -28,6 +28,7 @@ def lire_page(url):
         if not m or ("nestenn-" + m.group(1)) in annonces:
             continue
         carte = remonter_carte(a)
+        echantillon("nestenn-carte", carte)
         texte = carte.get_text(" ", strip=True)
         # Les biens vendus / plus disponibles n'ont pas de prix
         if "plus disponible" in texte or " vendu" in texte or "€" not in texte:
@@ -44,6 +45,8 @@ def lire_page(url):
             "lieu": lieu.group(1) if lieu else None,
             "photo": photo(carte, BASE),
         }
+    if not annonces:
+        echantillon("nestenn-page-vide", r.text)
     return list(annonces.values())
 
 

@@ -7,7 +7,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import CODES_POSTAUX, HEADERS, enregistrer
+from commun import CODES_POSTAUX, HEADERS, echantillon, enregistrer
 
 PAGES = ["/achat/maison/drome"]  # ajouter "/achat/maison/ardeche" pour Viviers, Saint-Montan
 MAX_PAGES = 4
@@ -23,6 +23,7 @@ def lire_page(url):
     r.raise_for_status()
     texte = BeautifulSoup(r.text, "html.parser").get_text(" ", strip=True)
     tous, gardes = FICHE.findall(texte), []
+    echantillon("proprietes_privees-page", r.text if not tous else texte)
     for ref, ville, cp, prix, surface, pieces, chambres in tous:
         if cp not in CODES_POSTAUX:
             continue

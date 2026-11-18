@@ -23,17 +23,18 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
+      - run: mkdir -p data && : > data/journal.txt
       # "|| true" : si un site plante, les autres continuent
-      - run: python scrapers/nestenn.py || true
-      - run: python scrapers/orpi.py || true
-      - run: python scrapers/swixim.py || true
-      - run: python scrapers/iad.py || true
-      - run: python scrapers/capifrance.py || true
-      - run: python scrapers/proprietes_privees.py || true
+      - run: python scrapers/nestenn.py 2>&1 | tee -a data/journal.txt || true
+      - run: python scrapers/orpi.py 2>&1 | tee -a data/journal.txt || true
+      - run: python scrapers/swixim.py 2>&1 | tee -a data/journal.txt || true
+      - run: python scrapers/iad.py 2>&1 | tee -a data/journal.txt || true
+      - run: python scrapers/capifrance.py 2>&1 | tee -a data/journal.txt || true
+      - run: python scrapers/proprietes_privees.py 2>&1 | tee -a data/journal.txt || true
       - name: Enregistrer les annonces
         run: |
           git config user.name "bot-annonces"
           git config user.email "bot@users.noreply.github.com"
-          git add data/annonces.json
+          git add data/
           git commit -m "Annonces du $(date +%F)" || echo "Rien de neuf"
           git push
