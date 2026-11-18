@@ -1,21 +1,15 @@
 Nestenn : 18 annonces, 18 nouvelles
 Orpi : 134 annonces, 134 nouvelles
 Swixim : 2 annonces, 2 nouvelles
-IAD : 73 annonces, 73 nouvelles
+IAD : 70 annonces, 70 nouvelles
 Capifrance la-garde-adhemar -> 404
 Capifrance saint-paul-trois-chateaux -> 404
 Capifrance chateauneuf-du-rhone -> 404
 Capifrance inaccessible : annonces précédentes conservées
 Propriétés Privées : 113 annonces lues sur le site
 Propriétés Privées : 29 annonces, 29 nouvelles
-era: 200 204866 octets, 16 prix, finale=https://www.eraimmobilier.com/acheter/Pierrelatte-c36080?display=list&page=1
-era-donzere: 200 287002 octets, 31 prix, finale=https://www.eraimmobilier.com/acheter/Donzere-c36065?display=list&page=1
-century21: 200 266072 octets, 0 prix, finale=https://www.century21.fr/annonces/achat-maison/v-montelimar/
-century21-donzere: 200 202461 octets, 0 prix, finale=https://www.century21.fr/annonces/achat-maison/v-donzere/
-stephaneplaza: 403 5908 octets, 0 prix, finale=https://www.stephaneplazaimmobilier.com/acheter/ville/montelimar_26198/maison/
-squarehabitat: 200 445094 octets, 14 prix, finale=https://www.squarehabitat.fr/annonces/achat/bien/maison/immobilier/auvergne-rhone-alpes/drome/montelimar-26200
-foncia: 403 118 octets, 0 prix, finale=https://fr.foncia.com/achat/montelimar-26200/maison
-safti: 200 138586 octets, 1 prix, finale=https://www.safti.fr/annonces/achat/maison/donzere-26290
-safti-acheter: 200 206373 octets, 1 prix, finale=https://www.safti.fr/acheter
-laforet: 200 1306801 octets, 40 prix, finale=https://www.laforet.com/acheter/rechercher?filter%5Bcities%5D%5B%5D=26198&filter%5Btypes%5D%5B%5D=house
-guyhoquet: 200 102032 octets, 0 prix, finale=https://www.guy-hoquet.com/biens/result#1&p=1&f10=1&f20=26_c2_26198
+Erreur saint-paul-trois-chateaux 410 Client Error: Gone for url: https://www.century21.fr/annonces/achat-maison/v-saint-paul-trois-chateaux/
+Erreur viviers 410 Client Error: Gone for url: https://www.century21.fr/annonces/achat-maison/v-viviers/
+Century 21 : 17 annonces, 17 nouvelles
+Square Habitat : 17 annonces, 17 nouvelles
+ERA : 8 annonces, 8 nouvelles
