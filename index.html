@@ -415,7 +415,7 @@ function blocMarche(a) {
   const lo = m.bas * f * 0.8, hi = m.haut * f * 1.3, pos = v => Math.max(0, Math.min(100, (v - lo) / (hi - lo) * 100));
   const ecart = `${m.ecart > 0 ? "+" : "−"}${Math.abs(Math.round(m.ecart * 100))} %`;
   return `<div class="marche v-${m.verdict}">
-    <div class="haut-m"><span class="verdict">${VERDICTS[m.verdict]}</span><span style="white-space:nowrap">${m.verdict === "incertain" ? "" : ecart + " vs marché"}</span>
+    <div class="haut-m"><span class="verdict">${VERDICTS[m.verdict]}</span><span style="white-space:nowrap">${m.verdict === "incertain" ? `<span style="opacity:.7">écart ${ecart}, indicatif</span>` : ecart + " vs marché"}</span>
       <a class="detail" href="${esc(m.lien)}" target="_blank" rel="noopener">Estimation ›</a></div>
     <div class="jauge" aria-hidden="true">
       <span class="zone" style="left:${pos(m.bas * f)}%;right:${100 - pos(m.haut * f)}%"></span>
@@ -631,7 +631,7 @@ function bandeau(data) {
       : esc(s.message || (ok ? `dernière réussite ${quand(ok)}` : "pas encore suivi"));
     return `<div class="ag"><span class="nom">${esc(n)}</span><span class="info">${info}</span><span class="etat ${statut}">${libelles[s.statut] || "?"}</span></div>`;
   }).join("") + ligneMarche(data) + `<div class="note-synchro">Le robot passe chaque matin vers 7 h (8 h en été). Les agences bloquées gardent leurs dernières annonces.</div>
-    <div class="note-synchro">Prix du marché : calculé par ton Estimateur DVF à partir des ventes notariées autour du centre de la commune, pour une maison en bon état de même surface, et majoré de ${Math.round((data.marche?.frais_agence ?? 0.05) * 100)} % de frais d'agence pour être comparable au prix affiché. Bonne affaire = moins cher que les trois quarts des ventes comparables ; Prix du marché = dans la fourchette ; Un peu cher = jusqu'à 15 % au-dessus ; Trop cher = au-delà.</div>`;
+    <div class="note-synchro">Prix du marché : calculé par ton Estimateur DVF à partir des ventes notariées autour du centre de la commune, pour une maison en bon état de même surface, et majoré de ${Math.round((data.marche?.frais_agence ?? 0.05) * 100)} % de frais d'agence pour être comparable au prix affiché. Sous 20/100 de fiabilité, aucun verdict n'est donné (Estimation peu fiable). Bonne affaire = moins cher que les trois quarts des ventes comparables ; Prix du marché = dans la fourchette ; Un peu cher = jusqu'à 15 % au-dessus ; Trop cher = au-delà.</div>`;
 }
 $("synchroBtn").onclick = () => {
   const o = $("synchro").classList.toggle("ouvert");

@@ -9,6 +9,8 @@ const FICHIER = process.argv[2] || path.join(__dirname, "..", "data", "annonces.
 const ESTIMATEUR = (process.argv[3] || "https://phrbo26.github.io/Estimateur-Immo/").replace(/\/?$/, "/");
 // Les annonces affichent un prix « frais d'agence inclus » ; DVF enregistre le prix payé au vendeur.
 const FRAIS_AGENCE = 0.05;
+// En dessous de ce score de l'estimateur (sur 100), on n'affiche pas de verdict tranché.
+const SEUIL_FIABILITE = 20;
 const TYPES = { Maison: "Maison", Villa: "Maison", "Mas / Ferme": "Maison", Appartement: "Appartement" };
 
 async function lire(url, format = "json") {
@@ -19,8 +21,8 @@ async function lire(url, format = "json") {
 
 /* Où tombe le prix demandé parmi les ventes réelles comparables (frais d'agence ajoutés) :
    sous le quart le moins cher = bonne affaire ; dans la fourchette = marché ; au-dessus = cher. */
-function verdict(prix, bas, haut, ventes) {
-  if (ventes < 8) return "incertain";
+function verdict(prix, bas, haut, ventes, fiabilite) {
+  if (ventes < 8 || fiabilite < SEUIL_FIABILITE) return "incertain";
   if (prix <= bas) return "bonne-affaire";
   if (prix <= haut) return "marche";
   if (prix <= haut * 1.15) return "un-peu-cher";
@@ -80,7 +82,7 @@ async function main() {
       estimation: r.estimation.median, bas: r.estimation.bas, haut: r.estimation.haut,
       prix_m2: Math.round(r.prixM2.median), avec_frais: Math.round(reference / 1000) * 1000,
       ecart: Math.round(ecart * 1000) / 1000,
-      verdict: verdict(a.prix, r.estimation.bas * (1 + FRAIS_AGENCE), r.estimation.haut * (1 + FRAIS_AGENCE), r.comparables.length),
+      verdict: verdict(a.prix, r.estimation.bas * (1 + FRAIS_AGENCE), r.estimation.haut * (1 + FRAIS_AGENCE), r.comparables.length, r.fiabilite.score),
       fiabilite: r.fiabilite.score, niveau: r.fiabilite.niveau, ventes: r.comparables.length, rayon: r.rayon,
       lien: lienEstimateur(a, type),
     };
