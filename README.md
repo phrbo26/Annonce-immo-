@@ -11,9 +11,12 @@ Chaque matin, un robot GitHub récupère les maisons à vendre chez plusieurs ag
 | `scrapers/swixim.py` | Swixim Portes de Provence | page lue |
 | `scrapers/iad.py` | IAD | page lue |
 | `scrapers/proprietes_privees.py` | Propriétés Privées | page lue, pagination à vérifier |
-| `scrapers/capifrance.py` | Capifrance | non vérifié (site bloqué à la lecture) |
+| `scrapers/century21.py` | Century 21 Portes de Provence | page lue |
+| `scrapers/square_habitat.py` | Square Habitat Sud Rhône-Alpes | page lue |
+| `scrapers/era.py` | ERA Pierrelatte | page lue |
+| `scrapers/capifrance.py` | Capifrance | bloqué (Cloudflare + JavaScript) : alerte e-mail |
 
-À ajouter plus tard : ERA, Century 21, Stéphane Plaza, Square Habitat, Foncia. SAFTI et Vinent bloquent la lecture : alerte e-mail sur leur site.
+Bloqués pour un robot : Stéphane Plaza, Foncia (refus 403), SAFTI (annonces chargées en JavaScript), Capifrance, Vinent. Pour eux : alerte e-mail sur leur site.
 
 ## Réglages à faire une fois
 

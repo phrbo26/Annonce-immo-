@@ -181,6 +181,17 @@ def photo_proche(lien, base, motif_lien, niveaux=8):
     return None
 
 
+def prix_isole(carte):
+    """Prix écrit seul dans son élément (« 235 000 € »), pour ne pas le coller au département voisin."""
+    for s in carte.stripped_strings:
+        m = re.fullmatch(r"(?:Prix\s*:?\s*)?([\d\s\u202f\u00a0.]+)\s?(?:€|&euro;)(?:\s*HAI)?", s)
+        if m:
+            chiffres = re.sub(r"\D", "", m.group(1))
+            if chiffres and int(chiffres) >= 10000:
+                return int(chiffres)
+    return None
+
+
 _DEJA = set()
 
 
@@ -205,7 +216,7 @@ def completer(x):
         x["commune"] = "Secteur non précisé"
         x.setdefault("cp", None)
         x["distance_km"] = None
-    x["type"] = type_bien(x.get("titre"), x.get("lien"))
+    x["type"] = x.get("type") or type_bien(x.get("titre"), x.get("lien"))
     if x.get("prix") and x.get("surface"):
         x["prix_m2"] = round(x["prix"] / x["surface"])
     return x
