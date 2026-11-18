@@ -13,5 +13,5 @@ Square Habitat : 17 annonces, 17 nouvelles
 ERA : 8 annonces, 8 nouvelles
 Le Site Immo : 145 annonces, 145 nouvelles
 ParuVendu : 125 annonces, 125 nouvelles
-Fiches : 0 terrains repris de la mémoire, 260 pages ouvertes, 130 terrains trouvés
+Fiches : 130 terrains repris de la mémoire, 0 pages ouvertes, 0 terrains trouvés
 Marché : 476 annonces comparées au marché, 89 sans estimation possible
