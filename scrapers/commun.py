@@ -163,6 +163,24 @@ def photo(carte, base):
     return None
 
 
+def photo_proche(lien, base, motif_lien, niveaux=8):
+    """Cherche la photo du bien en remontant depuis le lien de l'annonce,
+    sans dépasser le bloc qui ne contient que cette annonce."""
+    el, cible = lien, lien.get("href")
+    for _ in range(niveaux):
+        p = photo(el, base)
+        if p:
+            return p
+        parent = el.parent
+        if parent is None:
+            break
+        hrefs = {a.get("href") for a in parent.select(motif_lien)}
+        if len(hrefs - {cible}) > 0:
+            break
+        el = parent
+    return None
+
+
 _DEJA = set()
 
 
@@ -173,7 +191,7 @@ def echantillon(nom, html):
     _DEJA.add(nom)
     dossier = SORTIE.parent / "debug"
     dossier.mkdir(parents=True, exist_ok=True)
-    (dossier / f"{nom}.html").write_text(str(html)[:40000], encoding="utf-8")
+    (dossier / f"{nom}.html").write_text(str(html)[:400000], encoding="utf-8")
 
 
 def completer(x):
