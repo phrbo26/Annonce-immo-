@@ -1,0 +1,33 @@
+name: Annonces du jour
+
+on:
+  schedule:
+    - cron: "0 6 * * *"   # 7 h à Paris en hiver, 8 h en été
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt
+      # "|| true" : si un site plante, les autres continuent
+      - run: python scrapers/nestenn.py || true
+      - run: python scrapers/orpi.py || true
+      - run: python scrapers/swixim.py || true
+      - run: python scrapers/iad.py || true
+      - run: python scrapers/capifrance.py || true
+      - run: python scrapers/proprietes_privees.py || true
+      - name: Enregistrer les annonces
+        run: |
+          git config user.name "bot-annonces"
+          git config user.email "bot@users.noreply.github.com"
+          git add data/annonces.json
+          git commit -m "Annonces du $(date +%F)" || echo "Rien de neuf"
+          git push
