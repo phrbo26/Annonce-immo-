@@ -14,9 +14,11 @@ Chaque matin, un robot GitHub récupère les maisons à vendre chez plusieurs ag
 | `scrapers/century21.py` | Century 21 Portes de Provence | page lue |
 | `scrapers/square_habitat.py` | Square Habitat Sud Rhône-Alpes | page lue |
 | `scrapers/era.py` | ERA Pierrelatte | page lue |
+| `scrapers/lesiteimmo.py` | Le Site Immo (Saint Martin, K2, Miranda, Faure, Sud Immo, CTI Provence, SAFTI…) | page lue |
+| `scrapers/paruvendu.py` | ParuVendu (agences et particuliers) | page lue |
 | `scrapers/capifrance.py` | Capifrance | bloqué (Cloudflare + JavaScript) : alerte e-mail |
 
-Bloqués pour un robot : Stéphane Plaza, Foncia (refus 403), SAFTI (annonces chargées en JavaScript), Capifrance, Vinent. Pour eux : alerte e-mail sur leur site.
+Bloqués pour un robot : Stéphane Plaza, Foncia, PAP, Ouest-France Immo (refus 403), Capifrance, Vinent. SAFTI arrive via Le Site Immo. Pour eux : alerte e-mail sur leur site.
 
 ## Réglages à faire une fois
 

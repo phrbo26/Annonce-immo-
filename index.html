@@ -461,7 +461,7 @@ function carte(a) {
       </div>
     </a>
     <div class="corps" style="padding-top:0">${blocMarche(a)}<div class="pied">
-      <a class="agence" href="${esc(a.lien)}" target="_blank" rel="noopener">${esc(a.source)}</a>${autres}
+      <a class="agence" href="${esc(a.lien)}" target="_blank" rel="noopener">${esc(a.agence ? `${a.agence} · via ${a.source}` : a.source)}</a>${autres}
       <span class="date">${dateCourte(a.vu_le)}</span>
     </div></div>
     <div class="actions">

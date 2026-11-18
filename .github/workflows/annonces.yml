@@ -34,7 +34,8 @@ jobs:
       - run: python scrapers/century21.py 2>&1 | tee -a data/journal.txt || true
       - run: python scrapers/square_habitat.py 2>&1 | tee -a data/journal.txt || true
       - run: python scrapers/era.py 2>&1 | tee -a data/journal.txt || true
-      - run: python scrapers/sonde.py 2>&1 | tee -a data/journal.txt || true
+      - run: python scrapers/lesiteimmo.py 2>&1 | tee -a data/journal.txt || true
+      - run: python scrapers/paruvendu.py 2>&1 | tee -a data/journal.txt || true
       # Compare chaque annonce au prix du marché de l'Estimateur DVF (même algorithme, mêmes ventes)
       - uses: actions/setup-node@v4
         with:
