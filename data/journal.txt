@@ -1,15 +1,13 @@
 Nestenn : 18 annonces, 18 nouvelles
 Orpi : 131 annonces, 131 nouvelles
 Swixim : 2 annonces, 2 nouvelles
-IAD : 73 annonces, 73 nouvelles
+IAD : 74 annonces, 74 nouvelles
 Capifrance la-garde-adhemar -> 404
 Capifrance saint-paul-trois-chateaux -> 404
 Capifrance chateauneuf-du-rhone -> 404
 Capifrance : site inaccessible au robot (Cloudflare)
 Propriétés Privées : 113 annonces lues sur le site
 Propriétés Privées : 29 annonces, 29 nouvelles
-Erreur saint-paul-trois-chateaux 410 Client Error: Gone for url: https://www.century21.fr/annonces/achat-maison/v-saint-paul-trois-chateaux/
-Erreur viviers 410 Client Error: Gone for url: https://www.century21.fr/annonces/achat-maison/v-viviers/
 Century 21 : 17 annonces, 17 nouvelles
 Square Habitat : 17 annonces, 17 nouvelles
 ERA : 8 annonces, 8 nouvelles
