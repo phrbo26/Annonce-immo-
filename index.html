@@ -629,7 +629,7 @@ function bandeau(data) {
       : esc(s.message || (ok ? `dernière réussite ${quand(ok)}` : "pas encore suivi"));
     return `<div class="ag"><span class="nom">${esc(n)}</span><span class="info">${info}</span><span class="etat ${statut}">${libelles[s.statut] || "?"}</span></div>`;
   }).join("") + ligneMarche(data) + `<div class="note-synchro">Le robot passe chaque matin vers 7 h (8 h en été). Les agences bloquées gardent leurs dernières annonces.</div>
-    <div class="note-synchro">Prix du marché : calculé par ton Estimateur DVF à partir des ventes notariées autour du centre de la commune, pour une maison en bon état de même surface, et majoré de ${Math.round((data.marche?.frais_agence ?? 0.05) * 100)} % de frais d'agence pour être comparable au prix affiché.</div>`;
+    <div class="note-synchro">Prix du marché : calculé par ton Estimateur DVF à partir des ventes notariées autour du centre de la commune, pour une maison en bon état de même surface, et majoré de ${Math.round((data.marche?.frais_agence ?? 0.05) * 100)} % de frais d'agence pour être comparable au prix affiché. Bonne affaire = moins cher que les trois quarts des ventes comparables ; Prix du marché = dans la fourchette ; Un peu cher = jusqu'à 15 % au-dessus ; Trop cher = au-delà.</div>`;
 }
 $("synchroBtn").onclick = () => {
   const o = $("synchro").classList.toggle("ouvert");

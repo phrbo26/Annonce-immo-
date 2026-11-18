@@ -17,11 +17,13 @@ async function lire(url, format = "json") {
   return format === "json" ? r.json() : r.text();
 }
 
-function verdict(ecart, niveau) {
-  if (niveau === "faible") return "incertain";
-  if (ecart <= -0.10) return "bonne-affaire";
-  if (ecart <= 0.10) return "marche";
-  if (ecart <= 0.20) return "un-peu-cher";
+/* Où tombe le prix demandé parmi les ventes réelles comparables (frais d'agence ajoutés) :
+   sous le quart le moins cher = bonne affaire ; dans la fourchette = marché ; au-dessus = cher. */
+function verdict(prix, bas, haut, ventes) {
+  if (ventes < 8) return "incertain";
+  if (prix <= bas) return "bonne-affaire";
+  if (prix <= haut) return "marche";
+  if (prix <= haut * 1.15) return "un-peu-cher";
   return "trop-cher";
 }
 
@@ -77,7 +79,8 @@ async function main() {
     a.marche = {
       estimation: r.estimation.median, bas: r.estimation.bas, haut: r.estimation.haut,
       prix_m2: Math.round(r.prixM2.median), avec_frais: Math.round(reference / 1000) * 1000,
-      ecart: Math.round(ecart * 1000) / 1000, verdict: verdict(ecart, r.fiabilite.niveau),
+      ecart: Math.round(ecart * 1000) / 1000,
+      verdict: verdict(a.prix, r.estimation.bas * (1 + FRAIS_AGENCE), r.estimation.haut * (1 + FRAIS_AGENCE), r.comparables.length),
       fiabilite: r.fiabilite.score, niveau: r.fiabilite.niveau, ventes: r.comparables.length, rayon: r.rayon,
       lien: lienEstimateur(a, type),
     };
