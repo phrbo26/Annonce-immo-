@@ -6,7 +6,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import HEADERS, enregistrer, nombre, remonter_carte
+from commun import HEADERS, enregistrer, lien_absolu, nombre, photo, remonter_carte
 
 COMMUNES = [
     "donzere", "les-granges-gontardes", "pierrelatte", "la-garde-adhemar",
@@ -24,23 +24,25 @@ def lire_commune(commune):
     soup = BeautifulSoup(r.text, "html.parser")
     annonces = {}
     for a in soup.select('a[href*="annonce-vente"]'):
-        lien = a["href"] if a["href"].startswith("http") else BASE + a["href"]
+        lien = lien_absolu(BASE, a["href"])
         # l'identifiant est l'UUID à la fin de l'adresse
         m = re.search(r"([0-9a-f]{8}-[0-9a-f-]{27})/?$", lien)
         ref = "orpi-" + (m.group(1) if m else lien.rstrip("/").split("/")[-1])
         if ref in annonces:
             continue
-        texte = remonter_carte(a).get_text(" ", strip=True)
+        carte = remonter_carte(a)
+        texte = carte.get_text(" ", strip=True)
         titre = a.get_text(" ", strip=True)
         annonces[ref] = {
             "ref": ref,
             "titre": titre,
             "lien": lien,
             "prix": nombre(r"([\d\s  ]+)\s?€(?!\s?/)", texte),
-            "surface": nombre(r"([\d,]+)\s?m2", titre),
+            "surface": nombre(r"([\d,]+)\s?m\s?2", titre),
             "pieces": nombre(r"(\d+)\s?pièce", titre),
             "chambres": None,
-            "lieu": commune.replace("-", " ").title(),
+            "lieu": None,  # la vraie commune est lue dans le lien
+            "photo": photo(carte, BASE),
         }
     return list(annonces.values())
 
@@ -54,7 +56,7 @@ def main():
         except Exception as e:
             print("Erreur", commune, e)
         time.sleep(3)
-    enregistrer("Orpi", list(trouvees.values()))
+    enregistrer("Orpi", list(trouvees.values()), garder_inconnues=False)
 
 
 if __name__ == "__main__":

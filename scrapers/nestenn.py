@@ -5,7 +5,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import HEADERS, enregistrer, nombre, remonter_carte
+from commun import HEADERS, enregistrer, lien_absolu, nombre, photo, remonter_carte
 
 COMMUNES = [
     "donzere-26290", "les-granges-gontardes-26290", "pierrelatte-26700",
@@ -23,15 +23,16 @@ def lire_page(url):
     soup = BeautifulSoup(r.text, "html.parser")
     annonces = {}
     for a in soup.select('a[href*="-ref-"]'):
-        lien = a["href"] if a["href"].startswith("http") else BASE + "/" + a["href"].lstrip("/")
+        lien = lien_absolu(BASE, a["href"])
         m = re.search(r"-ref-(\d+)", lien)
         if not m or ("nestenn-" + m.group(1)) in annonces:
             continue
-        texte = remonter_carte(a).get_text(" ", strip=True)
+        carte = remonter_carte(a)
+        texte = carte.get_text(" ", strip=True)
         # Les biens vendus / plus disponibles n'ont pas de prix
         if "plus disponible" in texte or " vendu" in texte or "€" not in texte:
             continue
-        lieu = re.search(r"(À [\d.]+ km de \d{5} [\w\-]+|\d{5} [A-ZÉÈ\-]+)", texte)
+        lieu = re.search(r"(?<!km de )\b(\d{5} [A-ZÉÈ][A-ZÉÈ\- ]+)", texte)
         annonces["nestenn-" + m.group(1)] = {
             "ref": "nestenn-" + m.group(1),
             "titre": a.get("title") or a.get_text(strip=True),
@@ -41,6 +42,7 @@ def lire_page(url):
             "pieces": nombre(r"(\d+)\s?pièce", texte),
             "chambres": nombre(r"(\d+)\s?chambre", texte),
             "lieu": lieu.group(1) if lieu else None,
+            "photo": photo(carte, BASE),
         }
     return list(annonces.values())
 

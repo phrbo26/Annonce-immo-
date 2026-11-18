@@ -2,98 +2,501 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Annonces">
-<title>Annonces maison</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Ma maison">
+<meta name="theme-color" content="#f6f1ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17130f" media="(prefers-color-scheme: dark)">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+<title>Ma maison</title>
 <style>
-  :root { --fond: #f4f4f6; --carte: #fff; --texte: #1c1c1e; --gris: #6e6e73; --accent: #e8432e; --bord: #d1d1d6; }
-  @media (prefers-color-scheme: dark) {
-    :root { --fond: #000; --carte: #1c1c1e; --texte: #f2f2f7; --gris: #98989d; --bord: #3a3a3c; }
+  :root {
+    --fond: #f6f1ea; --carte: #fffdf9; --texte: #2a211b; --doux: #7a6c61; --trait: #e6ddd2;
+    --accent: #c65a3a; --accent-doux: #f6e1d8; --vert: #4f7a5a; --ombre: 0 1px 2px rgba(60,40,20,.06), 0 6px 18px rgba(60,40,20,.07);
+    --titre: "Fraunces", Georgia, serif;
   }
-  * { box-sizing: border-box; }
-  body { font-family: -apple-system, system-ui, sans-serif; margin: 0; background: var(--fond); color: var(--texte); }
-  header { position: sticky; top: 0; z-index: 1; background: var(--carte); padding: 12px 16px; box-shadow: 0 1px 4px #0002; }
-  h1 { font-size: 20px; margin: 0 0 8px; }
-  .filtres { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-  .filtres input, .filtres select { font-size: 16px; padding: 6px 8px; border: 1px solid var(--bord); border-radius: 8px; background: var(--carte); color: var(--texte); }
-  .filtres input[type=number] { width: 120px; }
-  #maj { color: var(--gris); font-size: 13px; margin-top: 6px; }
-  main { padding: 4px 0 24px; }
-  .carte { display: block; background: var(--carte); margin: 10px 16px; padding: 12px 14px; border-radius: 12px; color: inherit; text-decoration: none; }
-  .prix { font-size: 20px; font-weight: 700; }
-  .neuf { background: var(--accent); color: #fff; font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 10px; margin-left: 6px; vertical-align: middle; }
-  .titre { margin-top: 4px; font-size: 15px; }
-  .details, .source { color: var(--gris); font-size: 14px; margin-top: 4px; }
-  .vide { padding: 16px; color: var(--gris); }
+  @media (prefers-color-scheme: dark) {
+    :root { --fond: #17130f; --carte: #221c17; --texte: #f3ebe2; --doux: #a8998c; --trait: #3a3029;
+            --accent: #e27552; --accent-doux: #3d2a22; --vert: #7fb08b; --ombre: 0 1px 2px rgba(0,0,0,.4); }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; background: var(--fond); color: var(--texte); }
+  body { font: 16px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+  button, select, input { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+
+  /* En-tête */
+  .haut { position: sticky; top: 0; z-index: 5; background: color-mix(in srgb, var(--fond) 88%, transparent);
+          backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px);
+          padding: calc(10px + env(safe-area-inset-top)) 16px 10px; border-bottom: 1px solid var(--trait); }
+  .ligne-titre { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  h1 { font-family: var(--titre); font-size: 28px; margin: 0; letter-spacing: -.01em; }
+  #maj { color: var(--doux); font-size: 12.5px; text-align: right; }
+  .barre { display: flex; gap: 8px; margin-top: 10px; }
+  .commune { flex: 1; position: relative; }
+  .commune select { width: 100%; appearance: none; -webkit-appearance: none; border: 1px solid var(--trait); background: var(--carte);
+                    border-radius: 14px; padding: 11px 36px 11px 38px; font-weight: 600; box-shadow: var(--ombre); }
+  .commune svg { position: absolute; top: 50%; transform: translateY(-50%); pointer-events: none; }
+  .commune .pin { left: 12px; color: var(--accent); }
+  .commune .fleche { right: 12px; color: var(--doux); }
+  .btn-filtres { position: relative; border: 1px solid var(--trait); background: var(--carte); border-radius: 14px; padding: 0 14px;
+                 display: flex; align-items: center; gap: 6px; font-weight: 600; box-shadow: var(--ombre); }
+  .pastille { background: var(--accent); color: #fff; font-size: 11.5px; min-width: 18px; height: 18px; border-radius: 9px; display: none;
+              align-items: center; justify-content: center; padding: 0 5px; }
+  .pastille.on { display: inline-flex; }
+  .puces { display: flex; gap: 8px; overflow-x: auto; margin: 10px -16px 0; padding: 0 16px 2px; scrollbar-width: none; }
+  .puces::-webkit-scrollbar { display: none; }
+  .puce { flex: none; border: 1px solid var(--trait); background: var(--carte); border-radius: 999px; padding: 6px 12px; font-size: 14px; white-space: nowrap; }
+  .puce.on { background: var(--texte); color: var(--fond); border-color: var(--texte); }
+  .puce.accent.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* Liste */
+  .resume { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px 4px; color: var(--doux); font-size: 14px; }
+  .resume select { border: 0; background: none; color: var(--texte); font-weight: 600; text-align: right; padding: 4px 0; }
+  main { padding: 4px 16px 16px; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); max-width: 1100px; margin: 0 auto; }
+  .carte { background: var(--carte); border-radius: 18px; overflow: hidden; box-shadow: var(--ombre); position: relative; }
+  .carte a.lien { color: inherit; text-decoration: none; display: block; }
+  .visuel { aspect-ratio: 16 / 10; background: linear-gradient(135deg, var(--accent-doux), color-mix(in srgb, var(--accent-doux) 60%, var(--fond)));
+            display: grid; place-items: center; position: relative; overflow: hidden; }
+  .visuel.sans { aspect-ratio: auto; height: 64px; }
+  .visuel.sans .maisonnette svg { width: 30px; height: 30px; }
+  .visuel img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .visuel .maisonnette { color: var(--accent); opacity: .45; }
+  .badges { position: absolute; left: 10px; top: 10px; display: flex; gap: 6px; }
+  .badge { background: rgba(255,253,249,.94); color: #2a211b; font-size: 12px; font-weight: 700; padding: 4px 9px; border-radius: 999px; }
+  .badge.neuf { background: var(--accent); color: #fff; }
+  .actions { position: absolute; right: 8px; top: 8px; display: flex; gap: 6px; }
+  .rond { width: 38px; height: 38px; border-radius: 50%; border: 0; background: rgba(255,253,249,.94); color: #2a211b;
+          display: grid; place-items: center; box-shadow: 0 1px 4px rgba(0,0,0,.15); }
+  .rond.fav-on { color: var(--accent); }
+  .corps { padding: 12px 14px 14px; }
+  .prix-ligne { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .prix { font-family: var(--titre); font-size: 25px; font-weight: 700; letter-spacing: -.01em; }
+  .m2 { color: var(--doux); font-size: 13px; white-space: nowrap; }
+  .specs { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 6px; font-size: 14.5px; }
+  .specs span { display: inline-flex; align-items: center; gap: 5px; }
+  .specs svg { color: var(--doux); }
+  .lieu { margin-top: 8px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .lieu .km { color: var(--doux); font-weight: 400; }
+  .titre { color: var(--doux); font-size: 13.5px; margin-top: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .pied { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; align-items: center; }
+  .agence { font-size: 12.5px; font-weight: 600; background: var(--fond); border: 1px solid var(--trait); border-radius: 8px; padding: 3px 8px; text-decoration: none; color: inherit; }
+  .date { margin-left: auto; color: var(--doux); font-size: 12.5px; }
+  .vide { grid-column: 1 / -1; text-align: center; color: var(--doux); padding: 48px 20px; }
+  .vide h2 { font-family: var(--titre); color: var(--texte); font-size: 22px; margin: 12px 0 6px; }
+  .vide button { margin-top: 14px; border: 0; background: var(--accent); color: #fff; border-radius: 12px; padding: 10px 16px; font-weight: 600; }
+
+  /* Onglets du bas */
+  .onglets { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; display: flex; justify-content: center; gap: 4px;
+             background: color-mix(in srgb, var(--carte) 92%, transparent); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+             border-top: 1px solid var(--trait); padding: 6px 12px calc(6px + env(safe-area-inset-bottom)); }
+  .onglet { flex: 1; max-width: 160px; border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 2px;
+            font-size: 11.5px; font-weight: 600; color: var(--doux); padding: 4px 0; }
+  .onglet.on { color: var(--accent); }
+
+  /* Panneau des filtres */
+  .voile { position: fixed; inset: 0; background: rgba(20,12,6,.38); z-index: 9; opacity: 0; pointer-events: none; transition: opacity .2s; }
+  .voile.on { opacity: 1; pointer-events: auto; }
+  .panneau { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; background: var(--carte); border-radius: 22px 22px 0 0;
+             max-height: 88vh; display: flex; flex-direction: column; transform: translateY(105%); transition: transform .28s cubic-bezier(.2,.8,.2,1);
+             max-width: 640px; margin: 0 auto; }
+  .panneau.on { transform: none; }
+  .panneau header { padding: 10px 16px 8px; border-bottom: 1px solid var(--trait); text-align: center; position: relative; }
+  .poignee { width: 38px; height: 5px; border-radius: 3px; background: var(--trait); margin: 0 auto 8px; }
+  .panneau h2 { font-family: var(--titre); font-size: 20px; margin: 0; }
+  .panneau header button { position: absolute; top: 18px; border: 0; background: none; color: var(--accent); font-weight: 600; }
+  .contenu { overflow-y: auto; padding: 4px 16px 16px; -webkit-overflow-scrolling: touch; }
+  .bloc { padding: 14px 0; border-bottom: 1px solid var(--trait); }
+  .bloc:last-child { border-bottom: 0; }
+  .bloc h3 { font-size: 15px; margin: 0 0 10px; display: flex; justify-content: space-between; }
+  .bloc h3 small { color: var(--doux); font-weight: 400; }
+  .duo { display: flex; gap: 10px; }
+  .champ { flex: 1; display: flex; align-items: center; border: 1px solid var(--trait); border-radius: 12px; padding: 0 12px; background: var(--fond); }
+  .champ input { width: 100%; border: 0; background: none; padding: 11px 0; outline: none; font-size: 16px; }
+  .champ span { color: var(--doux); font-size: 14px; }
+  .segments { display: flex; border: 1px solid var(--trait); border-radius: 12px; overflow: hidden; background: var(--fond); }
+  .segments button { flex: 1; border: 0; background: none; padding: 9px 0; font-weight: 600; font-size: 14.5px; }
+  .segments button + button { border-left: 1px solid var(--trait); }
+  .segments button.on { background: var(--texte); color: var(--fond); }
+  .grille-puces { display: flex; flex-wrap: wrap; gap: 8px; }
+  .interrupteur { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; }
+  .interrupteur input { appearance: none; -webkit-appearance: none; width: 50px; height: 30px; border-radius: 15px; background: var(--trait); position: relative; transition: background .2s; flex: none; }
+  .interrupteur input::after { content: ""; position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,.25); transition: transform .2s; }
+  .interrupteur input:checked { background: var(--vert); }
+  .interrupteur input:checked::after { transform: translateX(20px); }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .panneau footer { padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--trait); }
+  .panneau footer button { width: 100%; border: 0; background: var(--accent); color: #fff; font-weight: 700; padding: 14px; border-radius: 14px; font-size: 16px; }
+
+  .toast { position: fixed; left: 50%; bottom: calc(88px + env(safe-area-inset-bottom)); transform: translate(-50%, 20px); opacity: 0;
+           background: var(--texte); color: var(--fond); padding: 10px 14px; border-radius: 12px; font-size: 14px; z-index: 20;
+           transition: all .25s; display: flex; gap: 12px; align-items: center; pointer-events: none; }
+  .toast.on { opacity: 1; transform: translate(-50%, 0); pointer-events: auto; }
+  .toast button { border: 0; background: none; color: var(--accent-doux); font-weight: 700; }
 </style>
 </head>
 <body>
-<header>
-  <h1>Annonces maison</h1>
-  <div class="filtres">
-    <input id="prixMax" type="number" inputmode="numeric" placeholder="Prix max €">
-    <input id="chMin" type="number" inputmode="numeric" placeholder="Chambres min">
-    <select id="source"><option value="">Toutes agences</option></select>
-    <label><input id="neufs" type="checkbox"> Nouvelles</label>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-pin" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7Zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5Z"/></symbol>
+  <symbol id="i-bas" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="m6 9 6 6 6-6"/></symbol>
+  <symbol id="i-filtres" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="10" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="18" cy="18" r="2" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+  <symbol id="i-coeur" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/></symbol>
+  <symbol id="i-coeur-plein" viewBox="0 0 24 24"><path fill="currentColor" d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10Z"/></symbol>
+  <symbol id="i-masquer" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" d="M7 7l10 10M17 7 7 17"/></symbol>
+  <symbol id="i-surface" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 4h16v16H4zM4 9h5V4M15 20v-5h5"/></symbol>
+  <symbol id="i-lit" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M3 18V7M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5M7 11.5h0"/><circle cx="7" cy="11" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-pieces" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M4 20V10l8-6 8 6v10H4Zm6 0v-6h4v6"/></symbol>
+  <symbol id="i-terrain" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 21v-7M12 14c-3 0-5-2-5-5a5 5 0 0 1 10 0c0 3-2 5-5 5ZM4 21h16"/></symbol>
+  <symbol id="i-maison" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3 2 11.5h3V20h5v-5h4v5h5v-8.5h3L12 3Z"/></symbol>
+  <symbol id="i-liste" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M8 6h12M8 12h12M8 18h12M4 6h0M4 12h0M4 18h0"/></symbol>
+</svg>
+
+<header class="haut">
+  <div class="ligne-titre">
+    <h1>Ma maison</h1>
+    <div id="maj">Chargement…</div>
   </div>
-  <div id="maj">Chargement…</div>
+  <div class="barre">
+    <label class="commune">
+      <svg class="pin" width="18" height="18"><use href="#i-pin"/></svg>
+      <select id="commune" aria-label="Commune"><option value="">Toutes les communes</option></select>
+      <svg class="fleche" width="18" height="18"><use href="#i-bas"/></svg>
+    </label>
+    <button class="btn-filtres" id="ouvrirFiltres" aria-label="Filtres">
+      <svg width="20" height="20"><use href="#i-filtres"/></svg>
+      <span class="pastille" id="nbFiltres"></span>
+    </button>
+  </div>
+  <div class="puces" id="puces">
+    <button class="puce accent" data-rapide="neufs">Nouveautés</button>
+    <button class="puce" data-rayon="5">5 km</button>
+    <button class="puce" data-rayon="10">10 km</button>
+    <button class="puce" data-rayon="15">15 km</button>
+    <button class="puce" data-rayon="20">20 km</button>
+    <button class="puce" data-rapide="b250">≤ 250 000 €</button>
+    <button class="puce" data-rapide="b350">≤ 350 000 €</button>
+    <button class="puce" data-rapide="ch3">3 ch. et +</button>
+    <button class="puce" data-rapide="jardin">Terrain 500 m² +</button>
+  </div>
 </header>
+
+<div class="resume">
+  <span id="compte"></span>
+  <select id="tri" aria-label="Trier">
+    <option value="recent">Plus récentes</option>
+    <option value="prix-asc">Prix croissant</option>
+    <option value="prix-desc">Prix décroissant</option>
+    <option value="m2-asc">Prix au m² le plus bas</option>
+    <option value="surface-desc">Plus grandes</option>
+    <option value="terrain-desc">Plus grand terrain</option>
+    <option value="distance">Plus proches de Donzère</option>
+  </select>
+</div>
+
 <main id="liste"></main>
+
+<nav class="onglets">
+  <button class="onglet on" data-vue="toutes"><svg width="24" height="24"><use href="#i-liste"/></svg>Annonces</button>
+  <button class="onglet" data-vue="favoris"><svg width="24" height="24"><use href="#i-coeur"/></svg><span id="ongletFav">Favoris</span></button>
+</nav>
+
+<div class="voile" id="voile"></div>
+<section class="panneau" id="panneau" aria-label="Filtres">
+  <header>
+    <div class="poignee"></div>
+    <button id="reinit" style="left:16px">Effacer</button>
+    <h2>Filtres</h2>
+    <button id="fermer" style="right:16px">OK</button>
+  </header>
+  <div class="contenu">
+    <div class="bloc">
+      <h3>Budget</h3>
+      <div class="duo">
+        <label class="champ"><input id="prixMin" type="number" inputmode="numeric" placeholder="Min"><span>€</span></label>
+        <label class="champ"><input id="prixMax" type="number" inputmode="numeric" placeholder="Max"><span>€</span></label>
+      </div>
+    </div>
+    <div class="bloc">
+      <h3>Distance de Donzère <small id="rayonTxt">toutes</small></h3>
+      <input id="rayon" type="range" min="0" max="25" step="1" value="25" aria-label="Rayon en km">
+    </div>
+    <div class="bloc">
+      <h3>Chambres</h3>
+      <div class="segments" id="chambres">
+        <button data-v="0">Tout</button><button data-v="1">1+</button><button data-v="2">2+</button><button data-v="3">3+</button><button data-v="4">4+</button><button data-v="5">5+</button>
+      </div>
+    </div>
+    <div class="bloc">
+      <h3>Surface et terrain</h3>
+      <div class="duo">
+        <label class="champ"><input id="surfaceMin" type="number" inputmode="numeric" placeholder="Surface min"><span>m²</span></label>
+        <label class="champ"><input id="terrainMin" type="number" inputmode="numeric" placeholder="Terrain min"><span>m²</span></label>
+      </div>
+    </div>
+    <div class="bloc">
+      <h3>Type de bien</h3>
+      <div class="grille-puces" id="types"></div>
+    </div>
+    <div class="bloc">
+      <h3>Agences</h3>
+      <div class="grille-puces" id="agences"></div>
+    </div>
+    <div class="bloc">
+      <label class="interrupteur">Nouveautés du jour seulement <input type="checkbox" id="neufs"></label>
+      <label class="interrupteur">Masquer les annonces sans prix <input type="checkbox" id="avecPrix"></label>
+      <label class="interrupteur">Regrouper les doublons entre agences <input type="checkbox" id="regrouper" checked></label>
+      <label class="interrupteur">Afficher les annonces masquées <input type="checkbox" id="voirMasquees"></label>
+    </div>
+  </div>
+  <footer><button id="voir">Voir les annonces</button></footer>
+</section>
+
+<div class="toast" id="toast"><span id="toastTxt"></span><button id="toastBtn">Annuler</button></div>
+
 <script>
-const champs = ["prixMax", "chMin", "source", "neufs"];
+"use strict";
+const $ = id => document.getElementById(id);
+const euros = n => n.toLocaleString("fr-FR") + " €";
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ico = (id, t = 16) => `<svg width="${t}" height="${t}"><use href="#${id}"/></svg>`;
+
+function lire(cle, defaut) { try { const v = localStorage.getItem(cle); return v ? JSON.parse(v) : defaut; } catch { return defaut; } }
+function ecrire(cle, v) { try { localStorage.setItem(cle, JSON.stringify(v)); } catch {} }
+
+const FILTRES_VIDES = { commune: "", prixMin: "", prixMax: "", rayon: 25, chambres: 0, surfaceMin: "", terrainMin: "",
+                        types: [], agences: [], neufs: false, avecPrix: false, regrouper: true, voirMasquees: false, tri: "recent" };
+let f = Object.assign({}, FILTRES_VIDES, lire("filtres-v2", {}));
+let favoris = new Set(lire("favoris", []));
+let masquees = new Set(lire("masquees", []));
+let vue = "toutes";
 let annonces = [];
 
-function lireFiltres() {
-  try { return JSON.parse(localStorage.getItem("filtres") || "{}"); } catch { return {}; }
+/* ---------- Doublons : même commune, même prix, surface proche ---------- */
+function regrouper(liste) {
+  const groupes = new Map();
+  for (const a of liste) {
+    const cle = a.prix && a.surface ? `${a.commune}|${a.prix}|${Math.round(a.surface / 3)}` : a.ref;
+    if (!groupes.has(cle)) groupes.set(cle, Object.assign({}, a, { autres: [] }));
+    else {
+      const g = groupes.get(cle);
+      if (g.source !== a.source && !g.autres.some(o => o.source === a.source)) g.autres.push({ source: a.source, lien: a.lien });
+      if (!g.photo && a.photo) g.photo = a.photo;
+      if (a.vu_le < g.vu_le) g.vu_le = a.vu_le;
+      g.nouveau = g.nouveau && a.nouveau;
+    }
+  }
+  return [...groupes.values()];
 }
-function ecrireFiltres(f) {
-  try { localStorage.setItem("filtres", JSON.stringify(f)); } catch {}
+
+/* ---------- Filtrage et tri ---------- */
+function filtrer(ignorer) {
+  return annonces.filter(a =>
+    (ignorer === "commune" || !f.commune || a.commune === f.commune) &&
+    (!f.prixMin || (a.prix && a.prix >= +f.prixMin)) &&
+    (!f.prixMax || (a.prix && a.prix <= +f.prixMax)) &&
+    (f.rayon >= 25 || (a.distance_km != null && a.distance_km <= f.rayon)) &&
+    (!f.chambres || (a.chambres && a.chambres >= f.chambres)) &&
+    (!f.surfaceMin || (a.surface && a.surface >= +f.surfaceMin)) &&
+    (!f.terrainMin || (a.terrain && a.terrain >= +f.terrainMin)) &&
+    (!f.types.length || f.types.includes(a.type)) &&
+    (!f.agences.length || f.agences.includes(a.source)) &&
+    (!f.neufs || a.nouveau) &&
+    (!f.avecPrix || a.prix) &&
+    (f.voirMasquees || !masquees.has(a.ref)) &&
+    (vue !== "favoris" || favoris.has(a.ref)));
 }
-function echapper(s) {
-  return String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const TRIS = {
+  "recent": (a, b) => (b.vu_le || "").localeCompare(a.vu_le || "") || (a.distance_km ?? 99) - (b.distance_km ?? 99),
+  "prix-asc": (a, b) => (a.prix || 9e9) - (b.prix || 9e9),
+  "prix-desc": (a, b) => (b.prix || 0) - (a.prix || 0),
+  "m2-asc": (a, b) => (a.prix_m2 || 9e9) - (b.prix_m2 || 9e9),
+  "surface-desc": (a, b) => (b.surface || 0) - (a.surface || 0),
+  "terrain-desc": (a, b) => (b.terrain || 0) - (a.terrain || 0),
+  "distance": (a, b) => (a.distance_km ?? 99) - (b.distance_km ?? 99),
+};
+
+function nbFiltresActifs() {
+  return ["prixMin", "prixMax", "surfaceMin", "terrainMin"].filter(k => f[k]).length
+    + (f.rayon < 25) + (f.chambres > 0) + (f.types.length > 0) + (f.agences.length > 0)
+    + f.neufs + f.avecPrix + f.voirMasquees;
+}
+
+/* ---------- Affichage ---------- */
+function dateCourte(iso) {
+  if (!iso) return "";
+  const d = new Date(iso + "T12:00:00"), auj = new Date();
+  const jours = Math.round((new Date(auj.toDateString()) - new Date(d.toDateString())) / 864e5);
+  if (jours <= 0) return "Aujourd'hui";
+  if (jours === 1) return "Hier";
+  if (jours < 7) return `Il y a ${jours} jours`;
+  return "Depuis le " + d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+}
+
+function carte(a) {
+  const fav = favoris.has(a.ref);
+  const specs = [
+    a.surface && `<span>${ico("i-surface")}${a.surface} m²</span>`,
+    a.pieces && `<span>${ico("i-pieces")}${a.pieces} p.</span>`,
+    a.chambres && `<span>${ico("i-lit")}${a.chambres} ch.</span>`,
+    a.terrain && `<span>${ico("i-terrain")}${a.terrain.toLocaleString("fr-FR")} m²</span>`,
+  ].filter(Boolean).join("");
+  const badges = [
+    a.nouveau && `<span class="badge neuf">Nouveau</span>`,
+    a.type && a.type !== "Maison" && `<span class="badge">${esc(a.type)}</span>`,
+  ].filter(Boolean).join("");
+  const visuel = a.photo
+    ? `<img src="${esc(a.photo)}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'maisonnette',innerHTML:'${ico("i-maison", 56).replace(/"/g, "&quot;")}'}))">`
+    : `<div class="maisonnette">${ico("i-maison", 56)}</div>`;
+  const autres = (a.autres || []).map(o => `<a class="agence" href="${esc(o.lien)}" target="_blank" rel="noopener">${esc(o.source)}</a>`).join("");
+  return `<article class="carte">
+    <a class="lien" href="${esc(a.lien)}" target="_blank" rel="noopener">
+      <div class="visuel${a.photo ? "" : " sans"}">${visuel}<div class="badges">${badges}</div></div>
+      <div class="corps">
+        <div class="prix-ligne">
+          <span class="prix">${a.prix ? euros(a.prix) : "Prix sur demande"}</span>
+          ${a.prix_m2 ? `<span class="m2">${a.prix_m2.toLocaleString("fr-FR")} €/m²</span>` : ""}
+        </div>
+        ${specs ? `<div class="specs">${specs}</div>` : ""}
+        <div class="lieu">${ico("i-pin", 15)}${esc(a.commune)}${a.distance_km != null && a.distance_km > 0 ? `<span class="km">· ${String(a.distance_km).replace(".", ",")} km</span>` : ""}</div>
+        <div class="titre">${esc(String(a.titre || "").replace(/\bm 2\b/g, "m²").replace(/^Achat /, ""))}</div>
+      </div>
+    </a>
+    <div class="corps" style="padding-top:0"><div class="pied">
+      <a class="agence" href="${esc(a.lien)}" target="_blank" rel="noopener">${esc(a.source)}</a>${autres}
+      <span class="date">${dateCourte(a.vu_le)}</span>
+    </div></div>
+    <div class="actions">
+      <button class="rond" data-masquer="${esc(a.ref)}" aria-label="${masquees.has(a.ref) ? "Réafficher" : "Masquer"}">${ico("i-masquer", 18)}</button>
+      <button class="rond ${fav ? "fav-on" : ""}" data-fav="${esc(a.ref)}" aria-label="Favori">${ico(fav ? "i-coeur-plein" : "i-coeur", 20)}</button>
+    </div>
+  </article>`;
+}
+
+function remplirCommunes() {
+  const comptes = new Map();
+  for (const a of filtrer("commune")) comptes.set(a.commune, (comptes.get(a.commune) || 0) + 1);
+  const toutes = [...new Map(annonces.map(a => [a.commune, a.distance_km])).entries()]
+    .sort((x, y) => (x[1] ?? 99) - (y[1] ?? 99) || x[0].localeCompare(y[0]));
+  const total = [...comptes.values()].reduce((s, n) => s + n, 0);
+  $("commune").innerHTML = `<option value="">Toutes les communes (${total})</option>` + toutes.map(([c, km]) =>
+    `<option value="${esc(c)}">${esc(c)}${km != null && km > 0 ? ` · ${Math.round(km)} km` : ""} (${comptes.get(c) || 0})</option>`).join("");
+  $("commune").value = f.commune;
 }
 
 function afficher() {
-  const f = Object.fromEntries(champs.map(id => {
-    const el = document.getElementById(id);
-    return [id, el.type === "checkbox" ? el.checked : el.value];
-  }));
-  ecrireFiltres(f);
-  const liste = annonces.filter(a =>
-    (!f.prixMax || (a.prix && a.prix <= +f.prixMax)) &&
-    (!f.chMin || (a.chambres && a.chambres >= +f.chMin)) &&
-    (!f.source || a.source === f.source) &&
-    (!f.neufs || a.nouveau));
-  document.getElementById("liste").innerHTML = liste.map(a => {
-    const details = [
-      a.surface && a.surface + " m²", a.pieces && a.pieces + " pièces",
-      a.chambres && a.chambres + " ch.", a.terrain && a.terrain.toLocaleString("fr-FR") + " m² terrain",
-    ].filter(Boolean).join(" · ");
-    return `<a class="carte" href="${echapper(a.lien)}" target="_blank" rel="noopener">
-      <div class="prix">${a.prix ? a.prix.toLocaleString("fr-FR") + " €" : "Prix non lu"}${a.nouveau ? '<span class="neuf">Nouveau</span>' : ""}</div>
-      <div class="titre">${echapper(a.titre)}</div>
-      ${details ? `<div class="details">${details}</div>` : ""}
-      <div class="source">${echapper(a.lieu)} · ${echapper(a.source)} · vu le ${echapper(a.vu_le)}</div>
-    </a>`;
-  }).join("") || '<p class="vide">Aucune annonce avec ces filtres.</p>';
+  ecrire("filtres-v2", f);
+  let liste = filtrer();
+  if (f.regrouper) liste = regrouper(liste);
+  liste.sort(TRIS[f.tri] || TRIS.recent);
+  remplirCommunes();
+  const nb = nbFiltresActifs();
+  $("nbFiltres").textContent = nb; $("nbFiltres").classList.toggle("on", nb > 0);
+  $("compte").textContent = `${liste.length} annonce${liste.length > 1 ? "s" : ""}`;
+  $("voir").textContent = `Voir ${liste.length} annonce${liste.length > 1 ? "s" : ""}`;
+  $("ongletFav").textContent = favoris.size ? `Favoris (${favoris.size})` : "Favoris";
+  $("tri").value = f.tri;
+  majPuces();
+  $("liste").innerHTML = liste.map(carte).join("") || (vue === "favoris"
+    ? `<div class="vide">${ico("i-coeur", 44)}<h2>Pas encore de favoris</h2>Touche le cœur d'une annonce pour la garder ici.</div>`
+    : `<div class="vide">${ico("i-maison", 44)}<h2>Aucune annonce</h2>Aucun bien ne correspond à ces critères.<br><button id="toutEffacer">Effacer les filtres</button></div>`);
+  const b = $("toutEffacer"); if (b) b.onclick = () => { f = Object.assign({}, FILTRES_VIDES, { tri: f.tri }); syncPanneau(); afficher(); };
 }
 
-fetch("data/annonces.json?" + Date.now()).then(r => r.json()).then(data => {
-  annonces = data.annonces || [];
-  const date = String(data.mis_a_jour).replace("T", " à ");
-  document.getElementById("maj").textContent = `${annonces.length} annonces · mis à jour le ${date}`;
-  const sel = document.getElementById("source");
-  [...new Set(annonces.map(a => a.source))].sort().forEach(s => sel.add(new Option(s, s)));
-  const f = lireFiltres();
-  champs.forEach(id => {
-    const el = document.getElementById(id);
-    if (el.type === "checkbox") el.checked = !!f[id]; else el.value = f[id] || "";
-    el.addEventListener("input", afficher);
+/* ---------- Puces rapides ---------- */
+const RAPIDES = {
+  neufs: { actif: () => f.neufs, basculer: v => f.neufs = v },
+  b250: { actif: () => f.prixMax == 250000, basculer: v => f.prixMax = v ? 250000 : "" },
+  b350: { actif: () => f.prixMax == 350000, basculer: v => f.prixMax = v ? 350000 : "" },
+  ch3: { actif: () => f.chambres === 3, basculer: v => f.chambres = v ? 3 : 0 },
+  jardin: { actif: () => f.terrainMin == 500, basculer: v => f.terrainMin = v ? 500 : "" },
+};
+function majPuces() {
+  document.querySelectorAll("[data-rayon]").forEach(p => p.classList.toggle("on", +p.dataset.rayon === f.rayon));
+  document.querySelectorAll("[data-rapide]").forEach(p => p.classList.toggle("on", RAPIDES[p.dataset.rapide].actif()));
+}
+$("puces").addEventListener("click", e => {
+  const p = e.target.closest(".puce"); if (!p) return;
+  if (p.dataset.rayon) f.rayon = f.rayon === +p.dataset.rayon ? 25 : +p.dataset.rayon;
+  else { const r = RAPIDES[p.dataset.rapide]; r.basculer(!r.actif()); }
+  syncPanneau(); afficher();
+});
+
+/* ---------- Panneau des filtres ---------- */
+function puces(conteneur, valeurs, cle) {
+  $(conteneur).innerHTML = valeurs.map(v => `<button class="puce ${f[cle].includes(v) ? "on" : ""}" data-v="${esc(v)}">${esc(v)}</button>`).join("");
+}
+function syncPanneau() {
+  for (const k of ["prixMin", "prixMax", "surfaceMin", "terrainMin"]) $(k).value = f[k];
+  for (const k of ["neufs", "avecPrix", "regrouper", "voirMasquees"]) $(k).checked = f[k];
+  $("rayon").value = f.rayon;
+  $("rayonTxt").textContent = f.rayon >= 25 ? "toutes" : `jusqu'à ${f.rayon} km`;
+  document.querySelectorAll("#chambres button").forEach(b => b.classList.toggle("on", +b.dataset.v === f.chambres));
+  puces("types", [...new Set(annonces.map(a => a.type))].sort(), "types");
+  puces("agences", [...new Set(annonces.map(a => a.source))].sort(), "agences");
+}
+function ouvrir(on) { $("panneau").classList.toggle("on", on); $("voile").classList.toggle("on", on); }
+$("ouvrirFiltres").onclick = () => { syncPanneau(); ouvrir(true); };
+$("fermer").onclick = $("voir").onclick = $("voile").onclick = () => ouvrir(false);
+$("reinit").onclick = () => { f = Object.assign({}, FILTRES_VIDES, { commune: f.commune, tri: f.tri }); syncPanneau(); afficher(); };
+for (const k of ["prixMin", "prixMax", "surfaceMin", "terrainMin"]) $(k).addEventListener("input", e => { f[k] = e.target.value; afficher(); });
+for (const k of ["neufs", "avecPrix", "regrouper", "voirMasquees"]) $(k).addEventListener("change", e => { f[k] = e.target.checked; afficher(); });
+$("rayon").addEventListener("input", e => { f.rayon = +e.target.value; syncPanneau(); afficher(); });
+$("chambres").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; f.chambres = +b.dataset.v; syncPanneau(); afficher(); });
+for (const [id, cle] of [["types", "types"], ["agences", "agences"]]) {
+  $(id).addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    const v = b.dataset.v; f[cle] = f[cle].includes(v) ? f[cle].filter(x => x !== v) : [...f[cle], v];
+    syncPanneau(); afficher();
   });
-  afficher();
+}
+$("commune").addEventListener("change", e => { f.commune = e.target.value; afficher(); window.scrollTo({ top: 0 }); });
+$("tri").addEventListener("change", e => { f.tri = e.target.value; afficher(); });
+
+/* ---------- Favoris, masquer, onglets ---------- */
+let annuler = null, minuteur = null;
+function toast(txt, action) {
+  $("toastTxt").textContent = txt; annuler = action;
+  $("toast").classList.add("on"); clearTimeout(minuteur);
+  minuteur = setTimeout(() => $("toast").classList.remove("on"), 3500);
+}
+$("toastBtn").onclick = () => { if (annuler) annuler(); $("toast").classList.remove("on"); };
+$("liste").addEventListener("click", e => {
+  const fav = e.target.closest("[data-fav]"), msq = e.target.closest("[data-masquer]");
+  if (fav) {
+    const r = fav.dataset.fav; favoris.has(r) ? favoris.delete(r) : favoris.add(r);
+    ecrire("favoris", [...favoris]); afficher();
+  } else if (msq) {
+    const r = msq.dataset.masquer;
+    if (masquees.has(r)) { masquees.delete(r); ecrire("masquees", [...masquees]); afficher(); return; }
+    masquees.add(r); ecrire("masquees", [...masquees]); afficher();
+    toast("Annonce masquée", () => { masquees.delete(r); ecrire("masquees", [...masquees]); afficher(); });
+  }
+});
+document.querySelector(".onglets").addEventListener("click", e => {
+  const o = e.target.closest(".onglet"); if (!o) return;
+  vue = o.dataset.vue;
+  document.querySelectorAll(".onglet").forEach(x => x.classList.toggle("on", x === o));
+  afficher(); window.scrollTo({ top: 0 });
+});
+
+/* ---------- Chargement ---------- */
+fetch("data/annonces.json?" + Date.now()).then(r => r.json()).then(data => {
+  annonces = (data.annonces || []).map(a => Object.assign({ commune: "Secteur non précisé", type: "Maison" }, a));
+  const m = String(data.mis_a_jour || "");
+  const d = new Date(m);
+  $("maj").textContent = isNaN(d) ? "" : "Mis à jour le " + d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) + " à " + d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  if (f.commune && !annonces.some(a => a.commune === f.commune)) f.commune = "";
+  syncPanneau(); afficher();
 }).catch(() => {
-  document.getElementById("maj").textContent = "Impossible de charger les annonces.";
+  $("maj").textContent = "";
+  $("liste").innerHTML = `<div class="vide">${ico("i-maison", 44)}<h2>Impossible de charger</h2>Vérifie ta connexion puis rouvre l'appli.</div>`;
 });
 </script>
 </body>

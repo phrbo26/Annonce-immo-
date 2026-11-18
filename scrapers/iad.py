@@ -4,7 +4,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import HEADERS, enregistrer, nombre, remonter_carte
+from commun import HEADERS, enregistrer, lien_absolu, nombre, photo, remonter_carte
 
 COMMUNES = [
     "donzere-26290", "les-granges-gontardes-26290", "pierrelatte-26700",
@@ -27,7 +27,8 @@ def lire_commune(commune):
         ref = "iad-" + lien.rstrip("/").split("/")[-1]
         if ref in annonces:
             continue
-        texte = remonter_carte(a).get_text(" ", strip=True)
+        carte = remonter_carte(a)
+        texte = carte.get_text(" ", strip=True)
         if "Sous compromis" in texte:
             continue
         annonces[ref] = {
@@ -39,7 +40,8 @@ def lire_commune(commune):
             "pieces": nombre(r"(\d+)\s?pièce", texte),
             "chambres": nombre(r"(\d+)\s?chambre", texte),
             "terrain": nombre(r"([\d\s  ]+)\s?m² de terrain", texte),
-            "lieu": commune.replace("-", " ").title(),
+            "lieu": None,  # la vraie commune est dans le titre et le lien
+            "photo": photo(carte, BASE),
         }
     return list(annonces.values())
 

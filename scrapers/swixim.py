@@ -5,7 +5,7 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-from commun import CODES_POSTAUX, HEADERS, enregistrer
+from commun import CODES_POSTAUX, HEADERS, enregistrer, photo
 
 URL = "https://www.swixim.com/en/agencies/details/20/swixim-portes-de-provence/"
 BASE = "https://www.swixim.com"
@@ -39,6 +39,7 @@ def main():
             "pieces": int(pieces),
             "chambres": int(chambres) if chambres else None,
             "lieu": f"{cp} {ville.replace('-', ' ').title()}",
+            "photo": photo(a, BASE),
         }
     enregistrer("Swixim", list(annonces.values()))
 
