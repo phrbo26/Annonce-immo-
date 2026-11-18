@@ -1,7 +1,7 @@
 Nestenn : 18 annonces, 18 nouvelles
-Orpi : 131 annonces, 131 nouvelles
+Orpi : 132 annonces, 132 nouvelles
 Swixim : 2 annonces, 2 nouvelles
-IAD : 75 annonces, 75 nouvelles
+IAD : 74 annonces, 74 nouvelles
 Capifrance la-garde-adhemar -> 404
 Capifrance saint-paul-trois-chateaux -> 404
 Capifrance chateauneuf-du-rhone -> 404
@@ -11,4 +11,19 @@ Propriétés Privées : 29 annonces, 29 nouvelles
 Century 21 : 17 annonces, 17 nouvelles
 Square Habitat : 17 annonces, 17 nouvelles
 ERA : 8 annonces, 8 nouvelles
-Marché : 222 annonces comparées au marché, 75 sans estimation possible
+pap: 403 5814 octets, 0 prix, finale=https://www.pap.fr/annonce/vente-maisons-donzere-26290-g16796
+pap-pierrelatte: 403 5848 octets, 0 prix, finale=https://www.pap.fr/annonce/vente-maisons-pierrelatte-26700-g16918
+fnaim-annonce: 200 220102 octets, 3 prix, finale=https://www.fnaim.fr/liste-annonces-immobilieres/17-acheter-maison-donzere-26290.htm?localites=%5B%7B%22id%22%3A19789%2C%22type%22%3A3%2C%22value%22%3A%22DONZERE+%2826290%29%22%2C%22label%22%3A%22DONZERE+%2826290%29%22%2C%22code%22%3A%2226290%22%2C%22insee%22%3A%2226116%22%7D%5D&TRANSACTION=1&TYPE%5B0%5D=2
+fnaim-liste: 200 189910 octets, 0 prix, finale=https://www.fnaim.fr/
+fnaim-liste2: 200 189911 octets, 0 prix, finale=https://www.fnaim.fr/
+etreproprio-annonce: 410 208527 octets, 0 prix, finale=https://www.etreproprio.com/immobilier-26375329-vente-maison-120-m-a-donzere-donzere
+etreproprio-liste: 200 227748 octets, 0 prix, finale=https://www.etreproprio.com/annonces/thf.r-26.odd.g-donzere
+efficity: 200 66638 octets, 0 prix, finale=https://www.efficity.com/achat-immobilier/maison_donzere_26290/
+laforet-ville: 200 1286477 octets, 40 prix, finale=https://www.laforet.com/ville/achat-maison-donzere-26290
+lesiteimmo: 200 777973 octets, 63 prix, finale=https://www.lesiteimmo.com/acheter/maison/donzere-26290
+bienici-suggest: 200 3356 octets, 0 prix, finale=https://res.bienici.com/suggest.json?q=donzere
+superimmo: 404 32 octets, 0 prix, finale=https://www.superimmo.com/achat/maison/rhone-alpes/drome/donzere
+greenacres: 404 119728 octets, 0 prix, finale=https://www.green-acres.fr/maison-a-vendre/donzere
+ouestfrance: 403 15041 octets, 0 prix, finale=https://www.ouestfrance-immo.com/acheter/maison/donzere-26-26290/
+paruvendu: 200 353887 octets, 12 prix, finale=https://www.paruvendu.fr/immobilier/vente/maison/donzere-26290/?rechpv=1&tt=1&tbMai=1&codeINSEE=26116
+Marché : 223 annonces comparées au marché, 74 sans estimation possible
