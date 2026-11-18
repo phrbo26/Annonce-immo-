@@ -6,7 +6,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import HEADERS, echantillon, enregistrer, lien_absolu, nombre, photo, prix_isole, remonter_carte, trouver_commune
+from commun import erreur, HEADERS, echantillon, enregistrer, lien_absolu, nombre, photo, prix_isole, remonter_carte, trouver_commune
 
 COMMUNES = ["donzere", "pierrelatte", "montelimar", "saint-paul-trois-chateaux", "viviers", "malataverne"]
 BASE = "https://www.century21.fr"
@@ -53,10 +53,14 @@ def main():
             for x in lire_commune(commune):
                 trouvees[x["ref"]] = x
         except Exception as e:
-            print("Erreur", commune, e)
+            erreur(commune, e)
         time.sleep(3)
     enregistrer("Century 21", list(trouvees.values()), garder_inconnues=False)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        from commun import signaler
+        signaler("Century 21", "erreur", f"le script a planté : {e}"[:200])

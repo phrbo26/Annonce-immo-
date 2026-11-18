@@ -8,7 +8,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import CODES_POSTAUX, HEADERS, echantillon, enregistrer, nombre, trouver_commune
+from commun import erreur, CODES_POSTAUX, HEADERS, echantillon, enregistrer, nombre, trouver_commune
 
 PAGES = ["/achat/maison/drome", "/achat/maison/ardeche"]
 MAX_PAGES = 5
@@ -60,7 +60,7 @@ def main():
             try:
                 refs, gardes = lire_page(url)
             except Exception as e:
-                print("Erreur", url, e)
+                erreur(url, e)
                 break
             if not refs or refs <= refs_vues:  # page vide ou identique à la précédente
                 break
@@ -73,4 +73,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        from commun import signaler
+        signaler("Propriétés Privées", "erreur", f"le script a planté : {e}"[:200])

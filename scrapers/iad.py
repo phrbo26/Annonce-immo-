@@ -4,7 +4,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import HEADERS, enregistrer, lien_absolu, nombre, echantillon, photo_proche, remonter_carte
+from commun import erreur, HEADERS, enregistrer, lien_absolu, nombre, echantillon, photo_proche, remonter_carte
 
 COMMUNES = [
     "donzere-26290", "les-granges-gontardes-26290", "pierrelatte-26700",
@@ -56,10 +56,14 @@ def main():
             for x in lire_commune(commune):
                 trouvees[x["ref"]] = x
         except Exception as e:
-            print("Erreur", commune, e)
+            erreur(commune, e)
         time.sleep(3)
     enregistrer("IAD", list(trouvees.values()))
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        from commun import signaler
+        signaler("IAD", "erreur", f"le script a planté : {e}"[:200])

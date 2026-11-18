@@ -222,12 +222,46 @@ def completer(x):
     return x
 
 
+ERREURS = []
+
+
+def erreur(*morceaux):
+    """Affiche une erreur et la compte pour le bandeau de l'appli."""
+    message = " ".join(str(m) for m in morceaux)
+    print("Erreur", message)
+    ERREURS.append(message[:200])
+
+
+def maintenant():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="minutes")
+
+
+def _lire():
+    if SORTIE.exists():
+        return json.loads(SORTIE.read_text(encoding="utf-8"))
+    return {}
+
+
+def _ecrire(donnees):
+    SORTIE.parent.mkdir(exist_ok=True)
+    SORTIE.write_text(json.dumps(donnees, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def signaler(source, statut, message):
+    """Note qu'une agence n'a pas pu être lue, sans toucher à ses annonces précédentes."""
+    donnees = _lire()
+    sources = donnees.setdefault("sources", {})
+    precedent = sources.get(source, {})
+    sources[source] = {**precedent, "statut": statut, "message": message, "essai": maintenant()}
+    _ecrire(donnees)
+    print(f"{source} : {message}")
+
+
 def enregistrer(source, trouvees, garder_inconnues=True):
     """Remplace les annonces de `source` dans data/annonces.json sans toucher aux autres agences.
     garder_inconnues=False écarte les annonces dont la commune n'est pas dans COMMUNES (trop loin)."""
-    tout = []
-    if SORTIE.exists():
-        tout = json.loads(SORTIE.read_text(encoding="utf-8")).get("annonces", [])
+    donnees = _lire()
+    tout = donnees.get("annonces", [])
     autres = [x for x in tout if x.get("source") != source]
     anciennes = {x["ref"]: x for x in tout if x.get("source") == source}
     aujourd_hui = datetime.date.today().isoformat()
@@ -238,9 +272,23 @@ def enregistrer(source, trouvees, garder_inconnues=True):
         x["nouveau"] = x["vu_le"] == aujourd_hui
     if not garder_inconnues:
         trouvees = [x for x in trouvees if x["distance_km"] is not None]
-    SORTIE.parent.mkdir(exist_ok=True)
-    SORTIE.write_text(json.dumps({
-        "mis_a_jour": datetime.datetime.now().isoformat(timespec="minutes"),
+    if not trouvees and anciennes:
+        # rien lu alors qu'il y avait des annonces : le site a sans doute changé, on garde l'existant
+        signaler(source, "erreur", "aucune annonce lue, annonces précédentes conservées")
+        return
+    nouvelles = sum(x["nouveau"] for x in trouvees)
+    sources = donnees.get("sources", {})
+    sources[source] = {
+        "statut": "partiel" if ERREURS else "ok",
+        "annonces": len(trouvees),
+        "nouvelles": nouvelles,
+        "message": f"{len(ERREURS)} page(s) en erreur" if ERREURS else "",
+        "essai": maintenant(),
+        "reussi": maintenant(),
+    }
+    _ecrire({
+        "mis_a_jour": maintenant(),
+        "sources": sources,
         "annonces": sorted(autres + trouvees, key=lambda x: x["vu_le"], reverse=True),
-    }, ensure_ascii=False, indent=2), encoding="utf-8")
-    print(f"{source} : {len(trouvees)} annonces, {sum(x['nouveau'] for x in trouvees)} nouvelles")
+    })
+    print(f"{source} : {len(trouvees)} annonces, {nouvelles} nouvelles")

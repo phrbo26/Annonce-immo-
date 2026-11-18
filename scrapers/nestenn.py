@@ -5,7 +5,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import HEADERS, enregistrer, lien_absolu, nombre, echantillon, photo, remonter_carte
+from commun import erreur, HEADERS, enregistrer, lien_absolu, nombre, echantillon, photo, remonter_carte
 
 COMMUNES = [
     "donzere-26290", "les-granges-gontardes-26290", "pierrelatte-26700",
@@ -58,7 +58,7 @@ def main():
             try:
                 lot = lire_page(url)
             except Exception as e:
-                print("Erreur", url, e)
+                erreur(url, e)
                 break
             if not lot:
                 break
@@ -72,4 +72,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        from commun import signaler
+        signaler("Nestenn", "erreur", f"le script a planté : {e}"[:200])

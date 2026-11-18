@@ -6,7 +6,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import HEADERS, echantillon, enregistrer, lien_absolu, nombre, photo, prix_isole, remonter_carte, trouver_commune
+from commun import erreur, HEADERS, echantillon, enregistrer, lien_absolu, nombre, photo, prix_isole, remonter_carte, trouver_commune
 
 RECHERCHES = ["Pierrelatte-c36080"]
 MAX_PAGES = 3
@@ -53,7 +53,7 @@ def main():
             try:
                 lot = lire(recherche, page)
             except Exception as e:
-                print("Erreur", recherche, page, e)
+                erreur(recherche, page, e)
                 break
             nouvelles = [x for x in lot if x["ref"] not in trouvees]
             for x in lot:
@@ -65,4 +65,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        from commun import signaler
+        signaler("ERA", "erreur", f"le script a planté : {e}"[:200])

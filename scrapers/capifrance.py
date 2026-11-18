@@ -7,7 +7,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import HEADERS, enregistrer, lien_absolu, nombre, echantillon, photo, remonter_carte
+from commun import erreur, signaler, HEADERS, enregistrer, lien_absolu, nombre, echantillon, photo, remonter_carte
 
 COMMUNES = [
     "donzere", "pierrelatte", "la-garde-adhemar", "saint-paul-trois-chateaux",
@@ -62,7 +62,7 @@ def main():
         try:
             lot = lire_commune(commune)
         except Exception as e:
-            print("Erreur", commune, e)
+            erreur(commune, e)
             lot = None
         if lot is None:
             bloque = True
@@ -71,10 +71,14 @@ def main():
             trouvees[x["ref"]] = x
         time.sleep(3)
     if bloque and not trouvees:
-        print("Capifrance inaccessible : annonces précédentes conservées")
+        signaler("Capifrance", "bloqué", "site inaccessible au robot (Cloudflare)")
         return
     enregistrer("Capifrance", list(trouvees.values()))
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        from commun import signaler
+        signaler("Capifrance", "erreur", f"le script a planté : {e}"[:200])

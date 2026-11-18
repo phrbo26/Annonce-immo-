@@ -7,7 +7,7 @@ import time
 import requests
 from bs4 import BeautifulSoup
 
-from commun import HEADERS, echantillon, enregistrer, lien_absolu, nombre, photo, remonter_carte, trouver_commune
+from commun import erreur, HEADERS, echantillon, enregistrer, lien_absolu, nombre, photo, remonter_carte, trouver_commune
 
 PAGES = [
     "drome/montelimar-26200", "drome/pierrelatte-26700", "drome/donzere-26290",
@@ -54,10 +54,14 @@ def main():
             for x in lire(page):
                 trouvees[x["ref"]] = x
         except Exception as e:
-            print("Erreur", page, e)
+            erreur(page, e)
         time.sleep(3)
     enregistrer("Square Habitat", list(trouvees.values()), garder_inconnues=False)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as e:
+        from commun import signaler
+        signaler("Square Habitat", "erreur", f"le script a planté : {e}"[:200])
