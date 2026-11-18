@@ -23,7 +23,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install -r requirements.txt
-      - run: mkdir -p data && : > data/journal.txt
+      - run: mkdir -p data && rm -f data/journal.txt && touch data/journal.txt
       # "|| true" : si un site plante, les autres continuent
       - run: python scrapers/nestenn.py 2>&1 | tee -a data/journal.txt || true
       - run: python scrapers/orpi.py 2>&1 | tee -a data/journal.txt || true
