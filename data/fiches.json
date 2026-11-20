@@ -1046,5 +1046,33 @@
  "lsi-32943111": {
   "terrain": null,
   "vu": "2026-11-19"
+ },
+ "nestenn-39746660": {
+  "terrain": 349,
+  "vu": "2026-11-20"
+ },
+ "orpi-375a58c2-87ad-473d-bdec-93c7b34292e9": {
+  "terrain": 900,
+  "vu": "2026-11-20"
+ },
+ "orpi-1f2e5e58-87c4-4916-980c-ded71d866889": {
+  "terrain": null,
+  "vu": "2026-11-20"
+ },
+ "orpi-d2dab0c2-092c-4a97-90d8-e69de98adee2": {
+  "terrain": null,
+  "vu": "2026-11-20"
+ },
+ "orpi-7ad084de-2a71-49ca-9502-c6cd6baed209": {
+  "terrain": 1730,
+  "vu": "2026-11-20"
+ },
+ "lsi-34236926": {
+  "terrain": null,
+  "vu": "2026-11-20"
+ },
+ "lsi-34235329": {
+  "terrain": 3116,
+  "vu": "2026-11-20"
  }
 }
