@@ -1,17 +1,17 @@
 Nestenn : 18 annonces, 0 nouvelles
-Orpi : 131 annonces, 2 nouvelles
+Orpi : 132 annonces, 2 nouvelles
 Swixim : 2 annonces, 0 nouvelles
-IAD : 69 annonces, 5 nouvelles
+IAD : 69 annonces, 0 nouvelles
 Capifrance la-garde-adhemar -> 404
 Capifrance saint-paul-trois-chateaux -> 404
 Capifrance chateauneuf-du-rhone -> 404
 Capifrance : site inaccessible au robot (Cloudflare)
-Propriétés Privées : 112 annonces lues sur le site
-Propriétés Privées : 30 annonces, 1 nouvelles
+Propriétés Privées : 111 annonces lues sur le site
+Propriétés Privées : 30 annonces, 0 nouvelles
 Century 21 : 17 annonces, 0 nouvelles
 Square Habitat : 17 annonces, 0 nouvelles
-ERA : 9 annonces, 1 nouvelles
-Le Site Immo : 143 annonces, 1 nouvelles
-ParuVendu : 114 annonces, 8 nouvelles
-Fiches : 129 terrains repris de la mémoire, 2 pages ouvertes, 1 terrains trouvés
-Marché : 465 annonces comparées au marché, 85 sans estimation possible
+ERA : 9 annonces, 0 nouvelles
+Le Site Immo : 141 annonces, 0 nouvelles
+ParuVendu : 109 annonces, 10 nouvelles
+Fiches : 130 terrains repris de la mémoire, 2 pages ouvertes, 0 terrains trouvés
+Marché : 460 annonces comparées au marché, 84 sans estimation possible
