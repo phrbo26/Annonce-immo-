@@ -1,18 +1,17 @@
 Nestenn : 18 annonces, 0 nouvelles
-Orpi : 139 annonces, 14 nouvelles
-Swixim : 2 annonces, 0 nouvelles
-IAD : 70 annonces, 0 nouvelles
+Orpi : 137 annonces, 3 nouvelles
+Swixim : 1 annonces, 0 nouvelles
+IAD : 66 annonces, 0 nouvelles
 Capifrance la-garde-adhemar -> 404
 Capifrance saint-paul-trois-chateaux -> 404
 Capifrance chateauneuf-du-rhone -> 404
 Capifrance : site inaccessible au robot (Cloudflare)
-Erreur https://www.proprietes-privees.com/achat/maison/drome 502 Server Error: Bad Gateway for url: https://www.proprietes-privees.com/achat/maison/drome
-Propriétés Privées : 50 annonces lues sur le site
-Propriétés Privées : 1 annonces, 0 nouvelles
-Century 21 : 18 annonces, 1 nouvelles
-Square Habitat : 19 annonces, 4 nouvelles
+Propriétés Privées : 112 annonces lues sur le site
+Propriétés Privées : 31 annonces, 30 nouvelles
+Century 21 : 18 annonces, 0 nouvelles
+Square Habitat : 19 annonces, 0 nouvelles
 ERA : 9 annonces, 0 nouvelles
-Le Site Immo : 142 annonces, 2 nouvelles
-ParuVendu : 113 annonces, 5 nouvelles
-Fiches : 119 terrains repris de la mémoire, 121 pages ouvertes, 7 terrains trouvés
-Marché : 435 annonces comparées au marché, 96 sans estimation possible
+Le Site Immo : 142 annonces, 1 nouvelles
+ParuVendu : 112 annonces, 8 nouvelles
+Fiches : 130 terrains repris de la mémoire, 3 pages ouvertes, 1 terrains trouvés
+Marché : 455 annonces comparées au marché, 98 sans estimation possible
